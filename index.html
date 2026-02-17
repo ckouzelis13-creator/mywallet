@@ -420,14 +420,6 @@ border-radius:12px;margin-bottom:6px;cursor:pointer;transition:all .15s}
 <div class="bal-l" id="balLbl">από 0,00€ εισόδημα</div>
 </div>
 
-<!-- Savings Tracker -->
-<div class="sav-c c" id="savCard">
-<div class="c-t">Αποταμίευση Μήνα</div>
-<div class="sav-amt" id="savAmt">0€ / 0€</div>
-<div class="sav-bar"><div class="sav-fill" id="savFill" style="width:0%"></div></div>
-<div class="sav-msg" id="savMsg">Πρόσθεσε έξοδα για να δεις την πρόοδο!</div>
-</div>
-
 <!-- Quick Add (dynamic) -->
 <div class="qa-row" id="qaRow"></div>
 
@@ -694,11 +686,22 @@ function tSpent(){return mExpenses().reduce((s,t)=>s+t.amount,0);}
 function tExtraIncome(){return mIncomes().reduce((s,t)=>s+t.amount,0);}
 function totalIncome(){return settings.income+tExtraIncome();}
 function cSum(c){return mExpenses().filter(t=>t.category===c).reduce((s,t)=>s+t.amount,0);}
-function fixed(){
-  const bills = settings.fixedBills || [];
-  return bills.reduce((s,b)=>s+(b.amount||0),0);
+// All bills INCLUDING savings as a bill
+function allBills(){
+  const bills=[...(settings.fixedBills||[])];
+  if(settings.savings>0) bills.push({id:'savings',name:'Αποταμίευση',icon:'💰',amount:settings.savings,cat:'other'});
+  return bills;
 }
-function safe(){return totalIncome()-fixed()-settings.savings-tSpent();}
+// Only count UNPAID bills — paid ones are already in tSpent() as transactions
+function fixed(){
+  return allBills().filter(b=>b.amount>0 && !isBillPaid(b.id)).reduce((s,b)=>s+b.amount,0);
+}
+// Total of ALL bills (for display)
+function fixedAll(){
+  return allBills().reduce((s,b)=>s+(b.amount||0),0);
+}
+// No more separate "- settings.savings" — savings is inside fixed() now
+function safe(){return totalIncome()-fixed()-tSpent();}
 
 // Month-specific helpers
 function txForMonth(year,month){
@@ -957,20 +960,18 @@ function isBillPaid(billId){
 }
 
 function renderBills(){
-  const bills=settings.fixedBills||[];
-  if(!bills.length || bills.every(b=>!b.amount)){
+  const bills=allBills().filter(b=>b.amount>0);
+  if(!bills.length){
     $('billsCard').style.display='none';
     return;
   }
   $('billsCard').style.display='';
-  const activeBills=bills.filter(b=>b.amount>0);
-  if(!activeBills.length){ $('billsList').innerHTML='<div style="color:var(--text2);font-size:13px">Βάλε ποσά στα πάγια στις Ρυθμίσεις.</div>'; return; }
 
-  const paidCount=activeBills.filter(b=>isBillPaid(b.id)).length;
-  const totalCount=activeBills.length;
+  const paidCount=bills.filter(b=>isBillPaid(b.id)).length;
+  const totalCount=bills.length;
 
   let h=`<div style="font-size:12px;color:var(--text2);margin-bottom:8px">${paidCount}/${totalCount} πληρώθηκαν</div>`;
-  activeBills.forEach(b=>{
+  bills.forEach(b=>{
     const paid=isBillPaid(b.id);
     h+=`<div class="bill-item" onclick="${paid?'':'payBill(\''+b.id+'\')'}" style="${paid?'opacity:.7;cursor:default':''}">
       <div class="bill-ico">${b.icon||'📄'}</div>
@@ -985,7 +986,7 @@ function renderBills(){
 }
 
 window.payBill = (billId)=>{
-  const bill=(settings.fixedBills||[]).find(b=>b.id===billId);
+  const bill=allBills().find(b=>b.id===billId);
   if(!bill||!currentUser) return;
   showCfm(`Πλήρωσες "${bill.name}" (${fmt(bill.amount)});`, async()=>{
     try{
@@ -1386,7 +1387,7 @@ function tips(){
 // ═══════════════════════════════
 // RENDERING
 // ═══════════════════════════════
-function renderAll(){renderDash();renderTxL('recTx',5);renderTxPage();renderSavings();renderQuickAdds();renderBills();}
+function renderAll(){renderDash();renderTxL('recTx',5);renderTxPage();renderQuickAdds();renderBills();}
 
 function renderDash(){
   const b=safe();$('balNum').textContent=fmt(b);$('balNum').className='bal-n '+(b>=0?'pos':'neg');
@@ -1396,27 +1397,6 @@ function renderDash(){
   $('dyVal').textContent=fmt(b>0?b/dleftN():0);
   $('dLeft').textContent=dleft();
   renderProg();renderTips();
-}
-
-// Savings Tracker
-function renderSavings(){
-  const spent = tSpent();
-  const fixedAmt = fixed();
-  const saved = Math.max(0, totalIncome() - fixedAmt - spent);
-  const goal = settings.savings || 1;
-  const pct = Math.min(100, (saved / goal) * 100);
-
-  $('savAmt').textContent = `${fmt(saved)} / ${fmt(settings.savings||0)}`;
-  $('savFill').style.width = (settings.savings>0?pct:0) + '%';
-
-  let msg;
-  if(settings.savings<=0) msg = 'Βάλε στόχο αποταμίευσης στις Ρυθμίσεις!';
-  else if(spent === 0 && tExtraIncome()===0) msg = 'Πρόσθεσε έξοδα για να δεις την πρόοδο!';
-  else if(pct >= 100) msg = 'Μπράβο! Πέτυχες τον στόχο αποταμίευσης!';
-  else if(pct >= 70) msg = 'Συνέχισε έτσι! Σχεδόν τα κατάφερες!';
-  else if(pct >= 40) msg = 'Καλή πορεία, κράτα σταθερά!';
-  else msg = 'Πρόσεχε τα έξοδα για να πετύχεις τον στόχο.';
-  $('savMsg').textContent = msg;
 }
 
 function renderProg(){
