@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SmartWallet AI">
+<meta name="theme-color" content="#000000">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23000' width='100' height='100' rx='22'/><text x='50' y='68' text-anchor='middle' font-size='52'>💰</text></svg>">
+<title>SmartWallet AI</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg:#000;--card:#1C1C1E;--card2:#2C2C2E;--card3:#3A3A3C;
+--text:#FFF;--text2:#8E8E93;--text3:#636366;
+--green:#32D74B;--red:#FF453A;--blue:#0A84FF;--orange:#FF9F0A;
+--yellow:#FFD60A;--purple:#BF5AF2;--pink:#FF375F;--teal:#30D5C8;
+--r:20px;
+--sat:env(safe-area-inset-top,20px);
+--sab:env(safe-area-inset-bottom,0px)
+}
+html,body{
+font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text','Helvetica Neue',sans-serif;
+background:var(--bg);color:var(--text);
+min-height:100vh;min-height:100dvh;
+overflow-x:hidden;-webkit-font-smoothing:antialiased;
+-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%
+}
+body{padding-top:var(--sat);padding-bottom:calc(72px + var(--sab))}
+::-webkit-scrollbar{display:none}
+
+/* ── Header ── */
+.hdr{
+position:sticky;top:0;z-index:100;
+padding:12px 20px 10px;
+background:rgba(0,0,0,.82);
+-webkit-backdrop-filter:saturate(180%) blur(20px);
+backdrop-filter:saturate(180%) blur(20px);
+border-bottom:.5px solid rgba(255,255,255,.08)
+}
+.hdr-top{display:flex;justify-content:space-between;align-items:center}
+.hdr h1{font-size:28px;font-weight:700;letter-spacing:-.5px}
+.hdr-sub{font-size:13px;color:var(--text2);margin-top:2px}
+
+/* DB badge */
+.db-badge{
+display:flex;align-items:center;gap:6px;
+padding:5px 10px;border-radius:12px;font-size:11px;font-weight:600;
+border:none;cursor:pointer;transition:all .2s
+}
+.db-badge.live{background:rgba(50,215,75,.12);color:var(--green)}
+.db-badge.off{background:var(--card2);color:var(--text2)}
+.db-badge.err{background:rgba(255,69,58,.12);color:var(--red)}
+.db-dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex-shrink:0}
+.db-badge.live .db-dot{animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* ── Pages ── */
+.pg{display:none;padding:16px 20px 30px;animation:fadeUp .3s ease}
+.pg.on{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ── Cards ── */
+.c{background:var(--card);border-radius:var(--r);padding:20px;margin-bottom:14px;
+transition:transform .15s,opacity .15s}
+.c:active{transform:scale(.98);opacity:.9}
+.c-t{font-size:13px;font-weight:600;color:var(--text2);
+text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+
+/* Balance */
+.bal-c{
+background:linear-gradient(135deg,#1C1C1E,#2C2C2E);
+border:1px solid rgba(255,255,255,.06);position:relative;overflow:hidden
+}
+.bal-c::after{content:'';position:absolute;top:-50%;right:-50%;width:100%;height:100%;
+background:radial-gradient(circle,rgba(50,215,75,.06),transparent 70%);pointer-events:none}
+.bal-n{font-size:44px;font-weight:700;letter-spacing:-1.5px;margin:4px 0}
+.bal-n.pos{color:var(--green)}.bal-n.neg{color:var(--red)}
+.bal-l{font-size:14px;color:var(--text2)}
+
+/* Stats row */
+.st-row{display:flex;gap:10px;margin-bottom:14px}
+.st-card{flex:1;background:var(--card);border-radius:var(--r);padding:14px;text-align:center}
+.st-val{font-size:22px;font-weight:700;margin-top:5px}
+.st-lbl{font-size:11px;color:var(--text2);letter-spacing:.3px}
+
+/* Progress */
+.pr-w{margin-bottom:14px}
+.pr-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
+.pr-n{font-size:14px;font-weight:500}
+.pr-v{font-size:13px;color:var(--text2)}
+.pr-bar{height:7px;background:var(--card2);border-radius:4px;overflow:hidden}
+.pr-fill{height:100%;border-radius:4px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+
+/* Tip */
+.tip{
+background:linear-gradient(135deg,rgba(10,132,255,.12),rgba(191,90,242,.08));
+border:1px solid rgba(10,132,255,.2);border-radius:var(--r);padding:18px;margin-bottom:14px
+}
+.tip-tag{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px}
+.tip-ico{font-size:26px;margin-bottom:6px}
+.tip-txt{font-size:14px;line-height:1.5;color:rgba(255,255,255,.9)}
+
+/* FAB */
+.fab{
+position:fixed;bottom:calc(82px + var(--sab));right:20px;z-index:90;
+width:56px;height:56px;border-radius:28px;background:var(--blue);
+border:none;color:#fff;font-size:28px;font-weight:300;
+display:flex;align-items:center;justify-content:center;
+box-shadow:0 4px 20px rgba(10,132,255,.4);
+transition:transform .15s,box-shadow .15s;cursor:pointer
+}
+.fab:active{transform:scale(.88);box-shadow:0 2px 10px rgba(10,132,255,.3)}
+
+/* ── Nav ── */
+.nav{
+position:fixed;bottom:0;left:0;right:0;z-index:100;
+background:rgba(28,28,30,.82);
+-webkit-backdrop-filter:saturate(180%) blur(20px);
+backdrop-filter:saturate(180%) blur(20px);
+border-top:.5px solid rgba(255,255,255,.08);
+display:flex;justify-content:space-around;align-items:flex-start;
+padding:8px 0 calc(8px + var(--sab));height:calc(72px + var(--sab))
+}
+.nav-i{
+display:flex;flex-direction:column;align-items:center;gap:3px;
+background:none;border:none;color:var(--text2);
+font-size:10px;font-weight:500;cursor:pointer;padding:4px 14px;transition:color .2s
+}
+.nav-i.on{color:var(--blue)}
+.nav-ic{font-size:22px;height:24px;display:flex;align-items:center}
+
+/* ── Modal ── */
+.mo{
+position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.55);
+-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+display:none;align-items:flex-end;justify-content:center
+}
+.mo.open{display:flex}
+.mo-s{
+background:var(--card);border-radius:20px 20px 0 0;
+width:100%;max-width:500px;max-height:85vh;overflow-y:auto;
+padding:20px 20px calc(20px + var(--sab));
+transform:translateY(100%);transition:transform .35s cubic-bezier(.32,.72,0,1)
+}
+.mo.open .mo-s{transform:none}
+.mo-h{width:36px;height:5px;background:rgba(255,255,255,.18);border-radius:3px;margin:0 auto 18px}
+.mo-t{font-size:20px;font-weight:700;margin-bottom:18px;text-align:center}
+
+/* Form */
+.fg{margin-bottom:16px}
+.fl{display:block;font-size:13px;color:var(--text2);margin-bottom:6px;font-weight:500}
+.fi{
+width:100%;padding:14px 16px;background:var(--card2);
+border:1px solid rgba(255,255,255,.08);border-radius:12px;
+color:var(--text);font-size:16px;outline:none;font-family:inherit;
+transition:border-color .2s;-webkit-appearance:none
+}
+.fi:focus{border-color:var(--blue)}
+.fi::placeholder{color:rgba(255,255,255,.22)}
+
+/* Cat tags */
+.cg{display:flex;flex-wrap:wrap;gap:8px}
+.ct{
+padding:8px 14px;border-radius:20px;font-size:13px;font-weight:500;
+background:var(--card2);border:1.5px solid rgba(255,255,255,.06);
+color:var(--text2);cursor:pointer;transition:all .2s;
+user-select:none;-webkit-user-select:none
+}
+.ct.sel{background:rgba(10,132,255,.2);border-color:var(--blue);color:var(--blue)}
+
+/* Btns */
+.btn{
+width:100%;padding:16px;border:none;border-radius:14px;font-size:16px;
+font-weight:600;font-family:inherit;cursor:pointer;transition:transform .12s,opacity .12s
+}
+.btn:active{transform:scale(.97);opacity:.85}
+.btn-b{background:var(--blue);color:#fff}
+.btn-g{background:var(--green);color:#fff}
+.btn-r{background:var(--red);color:#fff}
+.btn-s{background:var(--card2);color:var(--text)}
+
+/* TX list */
+.tx{
+display:flex;align-items:center;gap:14px;padding:14px 0;
+border-bottom:.5px solid rgba(255,255,255,.06);transition:opacity .3s
+}
+.tx:last-child{border-bottom:none}
+.tx-ic{
+width:40px;height:40px;border-radius:12px;
+display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0
+}
+.tx-d{flex:1;min-width:0}
+.tx-n{font-size:15px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tx-m{font-size:12px;color:var(--text2);margin-top:2px}
+.tx-a{font-size:16px;font-weight:600;color:var(--red);flex-shrink:0}
+.tx-x{
+background:none;border:none;color:var(--red);font-size:18px;
+padding:8px;cursor:pointer;opacity:.55;transition:opacity .2s;flex-shrink:0
+}
+.tx-x:active{opacity:1}
+
+/* Settings */
+.ss{margin-bottom:24px}
+.ss-t{font-size:18px;font-weight:700;margin-bottom:14px}
+.sr{
+display:flex;justify-content:space-between;align-items:center;
+padding:14px 16px;background:var(--card);border-radius:14px;margin-bottom:8px
+}
+.sr-l{font-size:15px;font-weight:500}
+.sr-i{
+width:100px;padding:8px 12px;background:var(--card2);
+border:1px solid rgba(255,255,255,.08);border-radius:10px;
+color:var(--text);font-size:15px;text-align:right;
+font-family:inherit;outline:none;-webkit-appearance:none
+}
+.sr-i:focus{border-color:var(--blue)}
+.sr-s{font-size:14px;color:var(--text2);margin-left:4px}
+
+/* Misc */
+.empty{text-align:center;padding:40px 20px;color:var(--text2)}
+.empty-i{font-size:48px;margin-bottom:12px}
+.empty-t{font-size:15px;line-height:1.5}
+.dsep{font-size:13px;font-weight:600;color:var(--text2);padding:12px 0 6px;text-transform:uppercase;letter-spacing:.5px}
+.ver{text-align:center;color:var(--text3);font-size:12px;margin-top:24px;padding-bottom:20px}
+.rst{
+margin-top:20px;padding:14px;background:rgba(255,69,58,.08);
+border:1px solid rgba(255,69,58,.15);border-radius:14px;
+color:var(--red);font-size:15px;font-weight:600;
+width:100%;cursor:pointer;font-family:inherit;transition:all .2s
+}
+.rst:active{background:rgba(255,69,58,.18)}
+
+/* Confirm */
+.cfm{
+position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.5);
+-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+display:none;align-items:center;justify-content:center;padding:40px
+}
+.cfm.open{display:flex}
+.cfm-b{
+background:var(--card2);border-radius:16px;padding:24px;
+text-align:center;max-width:300px;width:100%;animation:pop .25s cubic-bezier(.32,.72,0,1)
+}
+@keyframes pop{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+.cfm-m{font-size:15px;margin-bottom:20px;line-height:1.5}
+.cfm-r{display:flex;gap:10px}
+.cfm-r .btn{flex:1;padding:12px}
+
+/* Toast */
+.toast{
+position:fixed;top:calc(var(--sat) + 60px);left:50%;transform:translateX(-50%) translateY(-20px);
+z-index:400;padding:12px 20px;border-radius:14px;font-size:14px;font-weight:600;
+opacity:0;transition:all .3s cubic-bezier(.32,.72,0,1);pointer-events:none;
+max-width:88%;text-align:center;
+-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.ok{background:rgba(50,215,75,.18);color:var(--green);border:1px solid rgba(50,215,75,.25)}
+.toast.err{background:rgba(255,69,58,.18);color:var(--red);border:1px solid rgba(255,69,58,.25)}
+.toast.inf{background:rgba(10,132,255,.18);color:var(--blue);border:1px solid rgba(10,132,255,.25)}
+
+/* Cat colors */
+.cc-food{background:rgba(255,159,10,.15);color:var(--orange)}
+.cc-super{background:rgba(255,214,10,.15);color:var(--yellow)}
+.cc-transport{background:rgba(10,132,255,.15);color:var(--blue)}
+.cc-ent{background:rgba(191,90,242,.15);color:var(--purple)}
+.cc-shop{background:rgba(255,55,95,.15);color:var(--pink)}
+.cc-health{background:rgba(50,215,75,.15);color:var(--green)}
+.cc-bills{background:rgba(255,69,58,.15);color:var(--red)}
+.cc-other{background:rgba(142,142,147,.15);color:var(--text2)}
+
+/* Loading overlay */
+.loading{
+position:fixed;inset:0;z-index:500;background:var(--bg);
+display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+transition:opacity .4s
+}
+.loading.hide{opacity:0;pointer-events:none}
+.ld-spinner{
+width:36px;height:36px;border:3px solid var(--card2);
+border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ld-text{font-size:14px;color:var(--text2)}
+</style>
+</head>
+<body>
+
+<!-- Loading -->
+<div class="loading" id="loadScr">
+<div class="ld-spinner"></div>
+<div class="ld-text">Σύνδεση με Firebase...</div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Header -->
+<div class="hdr">
+<div class="hdr-top">
+<div>
+<h1 id="pgTitle">SmartWallet AI</h1>
+<div class="hdr-sub" id="pgSub">Ο προσωπικός σου οικονομικός βοηθός</div>
+</div>
+<div class="db-badge off" id="dbBadge">
+<span class="db-dot"></span>
+<span id="dbText">Σύνδεση...</span>
+</div>
+</div>
+</div>
+
+<!-- ═══ Dashboard ═══ -->
+<div class="pg on" id="pgDash">
+<div class="bal-c c">
+<div class="c-t">Διαθέσιμο Υπόλοιπο</div>
+<div class="bal-n pos" id="balNum">0,00€</div>
+<div class="bal-l" id="balLbl">από 1.150,00€ εισόδημα</div>
+</div>
+
+<div class="st-row">
+<div class="st-card">
+<div class="st-lbl">Εβδομαδιαίο</div>
+<div class="st-val" id="wkVal" style="color:var(--blue)">0€</div>
+</div>
+<div class="st-card">
+<div class="st-lbl">Ημερήσιο</div>
+<div class="st-val" id="dyVal" style="color:var(--teal)">0€</div>
+</div>
+<div class="st-card">
+<div class="st-lbl">Ημέρες</div>
+<div class="st-val" id="dLeft" style="color:var(--orange)">0</div>
+</div>
+</div>
+
+<div id="tipBox"></div>
+
+<div class="c" id="progCard">
+<div class="c-t">Κατανομή Εξόδων</div>
+<div id="progBars"></div>
+</div>
+
+<div class="c">
+<div class="c-t">Πρόσφατες Συναλλαγές</div>
+<div id="recTx"></div>
+</div>
+</div>
+
+<!-- ═══ Transactions ═══ -->
+<div class="pg" id="pgTx">
+<div class="c">
+<div class="c-t">Όλες οι Συναλλαγές</div>
+<div id="allTx"></div>
+</div>
+</div>
+
+<!-- ═══ Settings ═══ -->
+<div class="pg" id="pgSet">
+<div class="ss">
+<div class="ss-t">Μηνιαίο Εισόδημα</div>
+<div class="sr"><span class="sr-l">Εισόδημα</span><div style="display:flex;align-items:center"><input type="number" class="sr-i" id="sInc" inputmode="decimal"><span class="sr-s">€</span></div></div>
+</div>
+<div class="ss">
+<div class="ss-t">Στόχος Αποταμίευσης</div>
+<div class="sr"><span class="sr-l">Αποταμίευση</span><div style="display:flex;align-items:center"><input type="number" class="sr-i" id="sSav" inputmode="decimal"><span class="sr-s">€</span></div></div>
+</div>
+<div class="ss">
+<div class="ss-t">Πάγια Έξοδα</div>
+<div class="sr"><span class="sr-l">Ενοίκιο / Λογαριασμοί</span><div style="display:flex;align-items:center"><input type="number" class="sr-i" id="sRent" inputmode="decimal"><span class="sr-s">€</span></div></div>
+<div class="sr"><span class="sr-l">Δάνειο / Δόσεις</span><div style="display:flex;align-items:center"><input type="number" class="sr-i" id="sLoan" inputmode="decimal"><span class="sr-s">€</span></div></div>
+<div class="sr"><span class="sr-l">Γυμναστήριο</span><div style="display:flex;align-items:center"><input type="number" class="sr-i" id="sGym" inputmode="decimal"><span class="sr-s">€</span></div></div>
+</div>
+<div class="ss">
+<div class="ss-t">Προϋπολογισμοί</div>
+<div class="sr"><span class="sr-l">Σούπερ Μάρκετ</span><div style="display:flex;align-items:center"><input type="number" class="sr-i" id="sSup" inputmode="decimal"><span class="sr-s">€</span></div></div>
+</div>
+<button class="btn btn-b" onclick="saveSettings()" style="margin-top:8px">Αποθήκευση Ρυθμίσεων</button>
+<button class="rst" onclick="confirmReset()">Επαναφορά Όλων των Δεδομένων</button>
+<div class="ver">SmartWallet AI v3.0 — Firebase Cloud<br>Real-time sync across all devices</div>
+</div>
+
+<!-- FAB -->
+<button class="fab" id="fab" onclick="openModal()">+</button>
+
+<!-- Nav -->
+<nav class="nav">
+<button class="nav-i on" onclick="go('pgDash',this)"><span class="nav-ic">📊</span>Αρχική</button>
+<button class="nav-i" onclick="go('pgTx',this)"><span class="nav-ic">📋</span>Συναλλαγές</button>
+<button class="nav-i" onclick="go('pgSet',this)"><span class="nav-ic">⚙️</span>Ρυθμίσεις</button>
+</nav>
+
+<!-- Add Modal -->
+<div class="mo" id="addMo">
+<div class="mo-s">
+<div class="mo-h"></div>
+<div class="mo-t">Νέα Συναλλαγή</div>
+<div class="fg">
+<label class="fl">Ποσό (€)</label>
+<input type="number" class="fi" id="txAmt" placeholder="π.χ. 25.50" inputmode="decimal" step="0.01">
+</div>
+<div class="fg">
+<label class="fl">Περιγραφή</label>
+<input type="text" class="fi" id="txDsc" placeholder="π.χ. Καφές με φίλους" autocomplete="off">
+</div>
+<div class="fg">
+<label class="fl">Κατηγορία</label>
+<div class="cg" id="catG">
+<div class="ct" data-c="food" onclick="selCat(this)">🍕 Φαγητό</div>
+<div class="ct" data-c="super" onclick="selCat(this)">🛒 Σούπερ Μάρκετ</div>
+<div class="ct" data-c="transport" onclick="selCat(this)">🚗 Μεταφορικά</div>
+<div class="ct" data-c="ent" onclick="selCat(this)">🎬 Ψυχαγωγία</div>
+<div class="ct" data-c="shop" onclick="selCat(this)">🛍️ Αγορές</div>
+<div class="ct" data-c="health" onclick="selCat(this)">💊 Υγεία</div>
+<div class="ct" data-c="bills" onclick="selCat(this)">📄 Λογαριασμοί</div>
+<div class="ct" data-c="other" onclick="selCat(this)">📌 Άλλο</div>
+</div>
+</div>
+<button class="btn btn-g" onclick="addTx()">Προσθήκη Εξόδου</button>
+<button class="btn btn-s" style="margin-top:10px" onclick="closeMo()">Ακύρωση</button>
+</div>
+</div>
+
+<!-- Confirm -->
+<div class="cfm" id="cfmOv">
+<div class="cfm-b">
+<div class="cfm-m" id="cfmMsg"></div>
+<div class="cfm-r">
+<button class="btn btn-s" onclick="closeCfm()">Όχι</button>
+<button class="btn btn-r" id="cfmYes">Ναι</button>
+</div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- Firebase + App Logic                    -->
+<!-- ═══════════════════════════════════════ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+import {
+  getFirestore, collection, doc, addDoc, deleteDoc,
+  setDoc, getDoc, onSnapshot, query, orderBy
+} from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+
+// ── Firebase Config ──
+const firebaseConfig = {
+  apiKey: "AIzaSyA0O8vfoMvMeyEJltU3QWfxT3_dIJpirLs",
+  authDomain: "my-wallet-app-c4fb6.firebaseapp.com",
+  projectId: "my-wallet-app-c4fb6",
+  storageBucket: "my-wallet-app-c4fb6.firebasestorage.app",
+  messagingSenderId: "233595751510",
+  appId: "1:233595751510:web:1e3dcfaebeb6c66feb7ff7",
+  measurementId: "G-GTDED0H3EX"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const db = getFirestore(fbApp);
+
+// ── References ──
+const txCol = collection(db, 'transactions');
+const txQuery = query(txCol, orderBy('date', 'desc'));
+const settingsRef = doc(db, 'settings', 'config');
+
+// ── State ──
+const CATS = {
+  food:      { label:'Φαγητό',        icon:'🍕', css:'cc-food' },
+  super:     { label:'Σούπερ Μάρκετ', icon:'🛒', css:'cc-super' },
+  transport: { label:'Μεταφορικά',    icon:'🚗', css:'cc-transport' },
+  ent:       { label:'Ψυχαγωγία',     icon:'🎬', css:'cc-ent' },
+  shop:      { label:'Αγορές',        icon:'🛍️', css:'cc-shop' },
+  health:    { label:'Υγεία',         icon:'💊', css:'cc-health' },
+  bills:     { label:'Λογαριασμοί',   icon:'📄', css:'cc-bills' },
+  other:     { label:'Άλλο',          icon:'📌', css:'cc-other' }
+};
+
+const DEF_SET = { income:1150, savings:200, rent:200, loan:120, gym:70, supermarket:150 };
+
+let settings = { ...DEF_SET };
+let transactions = [];
+let selCategory = null;
+let cfmCb = null;
+let dbConnected = false;
+
+// ── Helpers ──
+const $ = id => document.getElementById(id);
+const fmt = n => n.toLocaleString('el-GR',{minimumFractionDigits:2,maximumFractionDigits:2})+'€';
+const esc = s => { const d=document.createElement('div'); d.textContent=s; return d.innerHTML; };
+
+function now() { return new Date() }
+function daysInMonth() { const n=now(); return new Date(n.getFullYear(),n.getMonth()+1,0).getDate(); }
+function daysLeft() { return Math.max(0, daysInMonth() - now().getDate()); }
+function weeksLeft() { return Math.max(1, Math.ceil(daysLeft()/7)); }
+function daysLeftNum() { return Math.max(1, daysLeft() || 1); }
+
+function monthTx() {
+  const n=now(), y=n.getFullYear(), m=n.getMonth();
+  return transactions.filter(t => { const d=new Date(t.date); return d.getFullYear()===y && d.getMonth()===m; });
+}
+function catSum(c) { return monthTx().filter(t=>t.category===c).reduce((s,t)=>s+t.amount,0); }
+function totalSpent() { return monthTx().reduce((s,t)=>s+t.amount,0); }
+function fixed() { return settings.rent + settings.loan + settings.gym; }
+function safeToSpend() { return settings.income - fixed() - settings.savings - totalSpent(); }
+
+function fmtDate(d) {
+  const dt = new Date(d);
+  const mo=['Ιαν','Φεβ','Μαρ','Απρ','Μαΐ','Ιουν','Ιουλ','Αυγ','Σεπ','Οκτ','Νοε','Δεκ'];
+  const dy=['Κυρ','Δευ','Τρι','Τετ','Πεμ','Παρ','Σαβ'];
+  return `${dy[dt.getDay()]}, ${dt.getDate()} ${mo[dt.getMonth()]}`;
+}
+function fmtTime(d) {
+  const dt=new Date(d);
+  return dt.getHours().toString().padStart(2,'0')+':'+dt.getMinutes().toString().padStart(2,'0');
+}
+
+// ── Toast ──
+let toastTmr;
+function toast(msg,type='inf') {
+  const el=$('toast'); el.textContent=msg; el.className='toast '+type;
+  clearTimeout(toastTmr);
+  requestAnimationFrame(()=>{ el.classList.add('show'); toastTmr=setTimeout(()=>el.classList.remove('show'),2500); });
+}
+
+// ── Nav ──
+window.go = (pgId, btn) => {
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  $(pgId).classList.add('on');
+  document.querySelectorAll('.nav-i').forEach(n=>n.classList.remove('on'));
+  if(btn) btn.classList.add('on');
+  const t = {pgDash:['SmartWallet AI','Ο προσωπικός σου οικονομικός βοηθός'],
+    pgTx:['Συναλλαγές','Ιστορικό εξόδων'], pgSet:['Ρυθμίσεις','Διαχείριση προϋπολογισμού']};
+  const v = t[pgId]||t.pgDash;
+  $('pgTitle').textContent=v[0]; $('pgSub').textContent=v[1];
+  $('fab').style.display = pgId==='pgSet'?'none':'flex';
+};
+
+// ── Modal ──
+window.openModal = () => {
+  $('txAmt').value=''; $('txDsc').value=''; selCategory=null;
+  document.querySelectorAll('.ct').forEach(t=>t.classList.remove('sel'));
+  $('addMo').classList.add('open');
+};
+window.closeMo = () => $('addMo').classList.remove('open');
+
+$('addMo').addEventListener('click', e => { if(e.target===$('addMo')) window.closeMo(); });
+
+window.selCat = el => {
+  document.querySelectorAll('.ct').forEach(t=>t.classList.remove('sel'));
+  el.classList.add('sel');
+  selCategory = el.dataset.c;
+};
+
+// ── Shake ──
+const shk = document.createElement('style');
+shk.textContent='@keyframes shk{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}';
+document.head.appendChild(shk);
+function shake(id) {
+  const el=$(id); el.style.borderColor='var(--red)'; el.style.animation='none';
+  el.offsetHeight; el.style.animation='shk .4s ease';
+  setTimeout(()=>{el.style.borderColor='';el.style.animation='';},500);
+}
+
+// ── Confirm ──
+window.closeCfm = () => { $('cfmOv').classList.remove('open'); cfmCb=null; };
+function showCfm(msg,cb) {
+  $('cfmMsg').textContent=msg; cfmCb=cb; $('cfmOv').classList.add('open');
+}
+$('cfmYes').addEventListener('click',()=>{ if(cfmCb)cfmCb(); window.closeCfm(); });
+
+// ══════════════════════════════════
+// ██ FIREBASE OPERATIONS
+// ══════════════════════════════════
+
+// ── Add Transaction ──
+window.addTx = async () => {
+  const amt = parseFloat($('txAmt').value);
+  const dsc = $('txDsc').value.trim();
+  if(!amt||amt<=0){shake('txAmt');return;}
+  if(!dsc){shake('txDsc');return;}
+  if(!selCategory){
+    const g=$('catG'); g.style.outline='2px solid var(--red)'; g.style.borderRadius='12px';
+    setTimeout(()=>g.style.outline='none',800); return;
+  }
+
+  try {
+    await addDoc(txCol, {
+      amount: Math.round(amt*100)/100,
+      description: dsc,
+      category: selCategory,
+      date: now().toISOString(),
+      createdAt: now().getTime()
+    });
+    window.closeMo();
+    toast('Προστέθηκε!','ok');
+  } catch(e) {
+    toast('Σφάλμα αποθήκευσης','err');
+    console.error(e);
+  }
+};
+
+// ── Delete Transaction ──
+window.delTx = (id) => {
+  showCfm('Διαγραφή αυτής της συναλλαγής;', async ()=>{
+    try {
+      await deleteDoc(doc(db,'transactions',id));
+      toast('Διαγράφηκε','ok');
+    } catch(e) {
+      toast('Σφάλμα διαγραφής','err');
+    }
+  });
+};
+
+// ── Save Settings ──
+window.saveSettings = async () => {
+  const s = {
+    income: parseFloat($('sInc').value)||0,
+    savings: parseFloat($('sSav').value)||0,
+    rent: parseFloat($('sRent').value)||0,
+    loan: parseFloat($('sLoan').value)||0,
+    gym: parseFloat($('sGym').value)||0,
+    supermarket: parseFloat($('sSup').value)||0
+  };
+  try {
+    await setDoc(settingsRef, s);
+    toast('Αποθηκεύτηκε!','ok');
+    const btn = document.querySelector('#pgSet .btn-b');
+    const orig=btn.textContent; btn.textContent='✓ Έγινε!'; btn.style.background='var(--green)';
+    setTimeout(()=>{btn.textContent=orig;btn.style.background='';},1500);
+  } catch(e) {
+    toast('Σφάλμα αποθήκευσης','err');
+  }
+};
+
+// ── Reset ──
+window.confirmReset = () => {
+  showCfm('Θέλεις σίγουρα να διαγράψεις ΟΛΑ τα δεδομένα από το cloud;', async ()=>{
+    try {
+      // Delete all transactions
+      for (const tx of transactions) {
+        await deleteDoc(doc(db,'transactions',tx.id));
+      }
+      // Reset settings
+      await setDoc(settingsRef, DEF_SET);
+      toast('Επαναφορά ολοκληρώθηκε','ok');
+    } catch(e) {
+      toast('Σφάλμα επαναφοράς','err');
+    }
+  });
+};
+
+// ── Populate Settings UI ──
+function fillSettings() {
+  $('sInc').value=settings.income;
+  $('sSav').value=settings.savings;
+  $('sRent').value=settings.rent;
+  $('sLoan').value=settings.loan;
+  $('sGym').value=settings.gym;
+  $('sSup').value=settings.supermarket;
+}
+
+// ══════════════════════════════════
+// ██ REAL-TIME LISTENERS
+// ══════════════════════════════════
+
+// ── Listen: Transactions ──
+onSnapshot(txQuery, snap => {
+  transactions = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+  renderAll();
+
+  if(!dbConnected) {
+    dbConnected = true;
+    $('dbBadge').className='db-badge live';
+    $('dbText').textContent='Live';
+    $('loadScr').classList.add('hide');
+    setTimeout(()=>$('loadScr').style.display='none',500);
+  }
+}, err => {
+  console.error('TX listener error:',err);
+  $('dbBadge').className='db-badge err';
+  $('dbText').textContent='Σφάλμα';
+  $('loadScr').classList.add('hide');
+});
+
+// ── Listen: Settings ──
+onSnapshot(settingsRef, snap => {
+  if(snap.exists()) {
+    settings = { ...DEF_SET, ...snap.data() };
+  } else {
+    settings = { ...DEF_SET };
+    // Create default settings on first load
+    setDoc(settingsRef, DEF_SET).catch(()=>{});
+  }
+  fillSettings();
+  renderAll();
+});
+
+// ══════════════════════════════════
+// ██ AI ADVISOR
+// ══════════════════════════════════
+function getAITips() {
+  const tips = [];
+  const bal = safeToSpend();
+  const spent = totalSpent();
+  const trn = catSum('transport');
+  const sup = catSum('super');
+  const fd = catSum('food');
+  const ent = catSum('ent');
+  const shp = catSum('shop');
+
+  if(bal<50 && spent>0)
+    tips.push({icon:'🚨',tag:'Κρίσιμη Ειδοποίηση',
+      txt:'Κρίσιμο! Το υπόλοιπό σου είναι πολύ χαμηλό. Πάγωσε κάθε μη αναγκαίο έξοδο αμέσως!',
+      color:'var(--red)'});
+  else if(bal<100 && spent>0)
+    tips.push({icon:'⚠️',tag:'Προσοχή',
+      txt:'Χαμηλό υπόλοιπο! Εστίασε μόνο στα απαραίτητα για το υπόλοιπο του μήνα.',
+      color:'var(--orange)'});
+
+  if(trn>80)
+    tips.push({icon:'🚗',tag:'Μεταφορικά',
+      txt:`Υψηλά μεταφορικά (${fmt(trn)}). Δοκίμασε ΜΜΜ και γλίτωσε ~70€/μήνα.`,
+      color:'var(--blue)'});
+
+  if(sup>settings.supermarket)
+    tips.push({icon:'🛒',tag:'Σούπερ Μάρκετ',
+      txt:`Ξεπέρασες τον προϋπολογισμό σούπερ μάρκετ (${fmt(sup)}/${fmt(settings.supermarket)}). Ψάξε προσφορές!`,
+      color:'var(--yellow)'});
+
+  if(fd>100)
+    tips.push({icon:'🍕',tag:'Φαγητό Έξω',
+      txt:`Πολλά σε φαγητό έξω (${fmt(fd)}). Μαγείρεψε σπίτι για εξοικονόμηση!`,
+      color:'var(--orange)'});
+
+  if(ent>60)
+    tips.push({icon:'🎬',tag:'Ψυχαγωγία',
+      txt:`Έξοδα ψυχαγωγίας ${fmt(ent)}. Αναζήτησε δωρεάν δραστηριότητες!`,
+      color:'var(--purple)'});
+
+  if(shp>80)
+    tips.push({icon:'🛍️',tag:'Αγορές',
+      txt:`Πολλά σε αγορές (${fmt(shp)}). Σκέψου αν πραγματικά τα χρειάζεσαι πριν αγοράσεις.`,
+      color:'var(--pink)'});
+
+  if(bal>=settings.savings && spent>0)
+    tips.push({icon:'✅',tag:'Αποταμίευση',
+      txt:`Μπράβο! Είσαι on track για αποταμίευση ${fmt(settings.savings)} αυτόν τον μήνα!`,
+      color:'var(--green)'});
+
+  if(spent===0)
+    tips.push({icon:'💡',tag:'Ξεκίνα',
+      txt:'Πρόσθεσε τα πρώτα σου έξοδα για εξατομικευμένες συμβουλές!',
+      color:'var(--blue)'});
+
+  const dom=now().getDate(), dim=daysInMonth();
+  const spendable = settings.income - fixed() - settings.savings;
+  if(dom<=dim/2 && spent>spendable*0.6 && spent>0)
+    tips.push({icon:'📈',tag:'Ρυθμός',
+      txt:'Πάνω από 60% του μπάτζετ στο πρώτο μισό του μήνα. Πρόσεξε τον ρυθμό!',
+      color:'var(--orange)'});
+
+  return tips;
+}
+
+// ══════════════════════════════════
+// ██ RENDERING
+// ══════════════════════════════════
+function renderAll() {
+  renderDash();
+  renderTxList('recTx',5);
+  renderTxList('allTx',0);
+}
+
+function renderDash() {
+  const bal = safeToSpend();
+  const el=$('balNum');
+  el.textContent=fmt(bal);
+  el.className='bal-n '+(bal>=0?'pos':'neg');
+  $('balLbl').textContent=`από ${fmt(settings.income)} εισόδημα`;
+
+  const wk = bal>0 ? bal/weeksLeft() : 0;
+  const dy = bal>0 ? bal/daysLeftNum() : 0;
+  $('wkVal').textContent=fmt(wk);
+  $('dyVal').textContent=fmt(dy);
+  $('dLeft').textContent=daysLeft();
+
+  renderProg();
+  renderTips();
+}
+
+function renderProg() {
+  const spendable = settings.income - fixed() - settings.savings;
+  const spent = totalSpent();
+  const cats = [
+    {k:'super',l:'Σούπερ Μάρκετ',b:settings.supermarket,i:'🛒'},
+    {k:'food',l:'Φαγητό',b:100,i:'🍕'},
+    {k:'transport',l:'Μεταφορικά',b:80,i:'🚗'},
+    {k:'ent',l:'Ψυχαγωγία',b:60,i:'🎬'},
+    {k:'shop',l:'Αγορές',b:80,i:'🛍️'}
+  ];
+
+  let h='';
+  const op=spendable>0?Math.min(100,(spent/spendable)*100):0;
+  const oc=op>90?'var(--red)':op>70?'var(--orange)':'var(--green)';
+  h+=`<div class="pr-w"><div class="pr-h"><span class="pr-n">💰 Συνολικά Έξοδα</span><span class="pr-v">${fmt(spent)} / ${fmt(spendable)}</span></div><div class="pr-bar"><div class="pr-fill" style="width:${op}%;background:${oc}"></div></div></div>`;
+
+  cats.forEach(c=>{
+    const s=catSum(c.k); if(!s) return;
+    const p=Math.min(100,(s/c.b)*100);
+    const cl=p>100?'var(--red)':p>75?'var(--orange)':'var(--green)';
+    h+=`<div class="pr-w"><div class="pr-h"><span class="pr-n">${c.i} ${c.l}</span><span class="pr-v">${fmt(s)} / ${fmt(c.b)}</span></div><div class="pr-bar"><div class="pr-fill" style="width:${p}%;background:${cl}"></div></div></div>`;
+  });
+  $('progBars').innerHTML=h;
+}
+
+function renderTips() {
+  const tips=getAITips();
+  if(!tips.length){$('tipBox').innerHTML='';return;}
+  $('tipBox').innerHTML = tips.map(t=>
+    `<div class="tip"><div class="tip-tag" style="color:${t.color}">🤖 ${t.tag}</div><div class="tip-ico">${t.icon}</div><div class="tip-txt">${t.txt}</div></div>`
+  ).join('');
+}
+
+function renderTxList(id,limit) {
+  const el=$(id);
+  const items = limit>0 ? transactions.slice(0,limit) : transactions;
+
+  if(!items.length){
+    el.innerHTML=`<div class="empty"><div class="empty-i">📝</div><div class="empty-t">Δεν υπάρχουν συναλλαγές ακόμα.<br>Πάτα το + για να προσθέσεις!</div></div>`;
+    return;
+  }
+
+  let h='', last='';
+  items.forEach(tx => {
+    const dl=fmtDate(tx.date);
+    if(dl!==last){last=dl;h+=`<div class="dsep">${dl}</div>`;}
+    const c=CATS[tx.category]||CATS.other;
+    h+=`<div class="tx">
+      <div class="tx-ic ${c.css}">${c.icon}</div>
+      <div class="tx-d">
+        <div class="tx-n">${esc(tx.description)}</div>
+        <div class="tx-m">${c.label} · ${fmtTime(tx.date)}</div>
+      </div>
+      <div class="tx-a">-${fmt(tx.amount)}</div>
+      <button class="tx-x" onclick="delTx('${tx.id}')" aria-label="Διαγραφή">✕</button>
+    </div>`;
+  });
+  el.innerHTML=h;
+}
+
+// ── Fallback timeout for loading screen ──
+setTimeout(()=>{
+  if(!dbConnected){
+    $('loadScr').classList.add('hide');
+    setTimeout(()=>$('loadScr').style.display='none',500);
+    $('dbBadge').className='db-badge err';
+    $('dbText').textContent='Αργή σύνδεση';
+    toast('Αργή σύνδεση — θα συγχρονιστεί αυτόματα','err');
+  }
+},8000);
+</script>
+</body>
+</html>
