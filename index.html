@@ -553,8 +553,15 @@ border-radius:12px;margin-bottom:6px;cursor:pointer;transition:all .15s}
 </div>
 
 <button class="btn btn-b" id="saveBtn" onclick="saveSettings()">Αποθήκευση Ρυθμίσεων</button>
-<button class="rst" onclick="confirmReset()">Επαναφορά Όλων των Δεδομένων</button>
-<div class="ver">SmartWallet AI v5.1 — Firebase + Shared Wallet + Custom Quick Add<br>Τα δεδομένα σου, παντού, πάντα.</div>
+
+<div class="ss" style="margin-top:24px">
+<div class="ss-t">Καθαρισμός / Επαναφορά</div>
+<button class="btn btn-s" onclick="clearMonthTx()" style="margin-bottom:8px">🗓️ Διαγραφή συναλλαγών μήνα</button>
+<button class="btn btn-s" onclick="clearAllTx()" style="margin-bottom:8px">🧹 Διαγραφή όλων των συναλλαγών</button>
+<button class="btn btn-s" onclick="resetBillsMonth()" style="margin-bottom:8px">🔄 Reset πάγια μήνα (Εκκρεμεί)</button>
+<button class="rst" onclick="confirmReset()">💣 Επαναφορά Όλων (ρυθμίσεις + δεδομένα)</button>
+</div>
+<div class="ver">SmartWallet AI v5.2<br>Τα δεδομένα σου, παντού, πάντα.</div>
 </div>
 
 <!-- FAB -->
@@ -1239,13 +1246,49 @@ window.saveSettings = async ()=>{
   }catch(e){toast('Σφάλμα αποθήκευσης','err');console.error(e);}
 };
 
-// ── Reset ──
+// ── Clear / Reset ──
+window.clearMonthTx=()=>{
+  const n=now(),y=n.getFullYear(),m=n.getMonth();
+  const monthTx=transactions.filter(t=>{const d=new Date(t.date);return d.getFullYear()===y&&d.getMonth()===m;});
+  if(!monthTx.length){toast('Δεν υπάρχουν συναλλαγές αυτόν τον μήνα','inf');return;}
+  showCfm(`Διαγραφή ${monthTx.length} συναλλαγών αυτού του μήνα;`,async()=>{
+    try{
+      for(const tx of monthTx){await deleteDoc(txDocRef(tx.id));}
+      toast(`${monthTx.length} συναλλαγές διαγράφηκαν!`,'ok');
+    }catch(e){toast('Σφάλμα','err');}
+  });
+};
+
+window.clearAllTx=()=>{
+  if(!transactions.length){toast('Δεν υπάρχουν συναλλαγές','inf');return;}
+  showCfm(`Διαγραφή ΟΛΩΝ των ${transactions.length} συναλλαγών; (οι ρυθμίσεις θα παραμείνουν)`,async()=>{
+    try{
+      for(const tx of transactions){await deleteDoc(txDocRef(tx.id));}
+      toast('Όλες οι συναλλαγές διαγράφηκαν!','ok');
+    }catch(e){toast('Σφάλμα','err');}
+  });
+};
+
+window.resetBillsMonth=()=>{
+  const key=currentMonthKey();
+  const paid=settings.paidBills||{};
+  if(!paid[key]||!paid[key].length){toast('Τα πάγια είναι ήδη σε εκκρεμότητα','inf');return;}
+  showCfm('Reset πάγια μήνα σε "Εκκρεμεί"; (οι συναλλαγές ΔΕΝ θα διαγραφούν)',async()=>{
+    try{
+      const newPaid={...paid};
+      delete newPaid[key];
+      await updateDoc(settingsRef(),{paidBills:newPaid});
+      toast('Πάγια μήνα: Εκκρεμεί','ok');
+    }catch(e){toast('Σφάλμα','err');}
+  });
+};
+
 window.confirmReset=()=>{
-  showCfm('Διαγραφή ΟΛΩΝ των δεδομένων;',async()=>{
+  showCfm('Διαγραφή ΟΛΩΝ; (συναλλαγές + ρυθμίσεις + πάγια)',async()=>{
     try{
       for(const tx of transactions){await deleteDoc(txDocRef(tx.id));}
       await setDoc(settingsRef(),{...DEF,quickAdds:DEFAULT_QA,fixedBills:DEFAULT_BILLS,paidBills:{}});
-      toast('Επαναφορά ολοκληρώθηκε','ok');
+      toast('Πλήρης επαναφορά!','ok');
     }catch(e){toast('Σφάλμα','err');}
   });
 };
