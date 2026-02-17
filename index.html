@@ -40,7 +40,6 @@ border-bottom:.5px solid rgba(255,255,255,.08)}
 
 /* User chip */
 .usr-chip{display:flex;align-items:center;gap:8px;cursor:pointer}
-.usr-ava{width:32px;height:32px;border-radius:50%;border:2px solid var(--blue);object-fit:cover}
 .usr-ava-placeholder{width:32px;height:32px;border-radius:50%;background:var(--card2);
 display:flex;align-items:center;justify-content:center;font-size:14px}
 .db-badge{display:flex;align-items:center;gap:5px;padding:4px 8px;border-radius:10px;font-size:10px;font-weight:600;border:none}
@@ -87,7 +86,7 @@ background:radial-gradient(circle,rgba(50,215,75,.06),transparent 70%);pointer-e
 .bal-n.pos{color:var(--green)}.bal-n.neg{color:var(--red)}
 .bal-l{font-size:14px;color:var(--text2)}
 
-/* Stats */
+/* Stats row */
 .st-row{display:flex;gap:10px;margin-bottom:14px}
 .st-card{flex:1;background:var(--card);border-radius:var(--r);padding:14px;text-align:center}
 .st-val{font-size:22px;font-weight:700;margin-top:5px}
@@ -145,6 +144,13 @@ transition:border-color .2s;-webkit-appearance:none}
 .fi:focus{border-color:var(--blue)}
 .fi::placeholder{color:rgba(255,255,255,.22)}
 
+/* Type toggle (expense/income) */
+.type-tog{display:flex;gap:0;background:var(--card2);border-radius:12px;padding:3px;margin-bottom:16px}
+.type-btn{flex:1;padding:10px;border:none;border-radius:10px;font-size:14px;font-weight:600;
+font-family:inherit;cursor:pointer;transition:all .2s;background:transparent;color:var(--text2)}
+.type-btn.sel-exp{background:var(--red);color:#fff}
+.type-btn.sel-inc{background:var(--green);color:#fff}
+
 /* Cat */
 .cg{display:flex;flex-wrap:wrap;gap:8px}
 .ct{padding:8px 14px;border-radius:20px;font-size:13px;font-weight:500;
@@ -162,15 +168,120 @@ font-weight:600;font-family:inherit;cursor:pointer;transition:transform .12s,opa
 .btn-s{background:var(--card2);color:var(--text)}
 
 /* TX */
-.tx{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:.5px solid rgba(255,255,255,.06);transition:opacity .3s}
-.tx:last-child{border-bottom:none}
+.tx-wrap{position:relative;overflow:hidden;border-bottom:.5px solid rgba(255,255,255,.06)}
+.tx-wrap:last-child{border-bottom:none}
+.tx-del-bg{position:absolute;right:0;top:0;bottom:0;width:80px;background:var(--red);
+display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:600;
+opacity:0;transition:opacity .2s}
+.tx-wrap.swiped .tx-del-bg{opacity:1}
+.tx{display:flex;align-items:center;gap:14px;padding:14px 0;transition:transform .25s ease;background:var(--bg);position:relative;z-index:1}
+.tx-wrap .tx{background:var(--card)}
 .tx-ic{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
 .tx-d{flex:1;min-width:0}
 .tx-n{font-size:15px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tx-m{font-size:12px;color:var(--text2);margin-top:2px}
-.tx-a{font-size:16px;font-weight:600;color:var(--red);flex-shrink:0}
-.tx-x{background:none;border:none;color:var(--red);font-size:18px;padding:8px;cursor:pointer;opacity:.55;transition:opacity .2s;flex-shrink:0}
-.tx-x:active{opacity:1}
+.tx-a{font-size:16px;font-weight:600;flex-shrink:0}
+.tx-a.expense{color:var(--red)}
+.tx-a.income{color:var(--green)}
+
+/* Quick Add */
+.qa-row{display:flex;gap:8px;overflow-x:auto;padding:2px 0 14px;-webkit-overflow-scrolling:touch}
+.qa-row::-webkit-scrollbar{display:none}
+.qa-btn{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px;
+padding:12px 14px;background:var(--card);border:1.5px solid rgba(255,255,255,.06);
+border-radius:16px;font-size:11px;font-weight:600;color:var(--text2);
+cursor:pointer;transition:all .15s;user-select:none;min-width:72px;font-family:inherit}
+.qa-btn:active{transform:scale(.92);opacity:.8;background:var(--card2)}
+.qa-btn.inc{border-color:rgba(50,215,75,.2)}
+.qa-ico{font-size:24px}
+.qa-amt{font-size:13px;font-weight:700}
+.qa-amt.expense{color:var(--text)}
+.qa-amt.income{color:var(--green)}
+
+/* Quick Add manage in settings */
+.qa-list{margin-bottom:12px}
+.qa-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--card);
+border-radius:12px;margin-bottom:6px}
+.qa-item-ico{font-size:20px;width:28px;text-align:center}
+.qa-item-info{flex:1;font-size:14px;font-weight:500}
+.qa-item-amt{font-size:14px;font-weight:700}
+.qa-item-amt.expense{color:var(--red)}
+.qa-item-amt.income{color:var(--green)}
+.qa-item-del{background:none;border:none;color:var(--red);font-size:18px;padding:4px 8px;cursor:pointer;opacity:.6}
+.qa-item-del:active{opacity:1}
+.qa-add-form{background:var(--card);border-radius:14px;padding:14px;margin-top:8px}
+.qa-add-row{display:flex;gap:8px;margin-bottom:8px}
+.qa-add-row .fi{padding:10px 12px;font-size:14px}
+.qa-add-row .fi.sm{width:60px;flex-shrink:0;text-align:center}
+.qa-add-type-row{display:flex;gap:8px;margin-bottom:8px}
+.qa-add-type-btn{flex:1;padding:8px;border:1.5px solid rgba(255,255,255,.08);border-radius:10px;
+background:var(--card2);color:var(--text2);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .2s}
+.qa-add-type-btn.sel-exp{border-color:var(--red);background:rgba(255,69,58,.12);color:var(--red)}
+.qa-add-type-btn.sel-inc{border-color:var(--green);background:rgba(50,215,75,.12);color:var(--green)}
+
+/* Savings Tracker */
+.sav-c{background:linear-gradient(135deg,rgba(50,215,75,.08),rgba(10,132,255,.06));
+border:1px solid rgba(50,215,75,.15);position:relative;overflow:hidden}
+.sav-amt{font-size:28px;font-weight:700;color:var(--green);margin:6px 0}
+.sav-msg{font-size:14px;color:var(--text2);line-height:1.4;margin-top:8px}
+.sav-bar{height:10px;background:var(--card2);border-radius:5px;overflow:hidden;margin-top:10px}
+.sav-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--green),var(--teal));transition:width .6s cubic-bezier(.4,0,.2,1)}
+
+/* Search */
+.search-wrap{position:relative;margin-bottom:14px}
+.search-fi{width:100%;padding:12px 16px 12px 40px;background:var(--card2);border:1px solid rgba(255,255,255,.08);
+border-radius:14px;color:var(--text);font-size:15px;outline:none;font-family:inherit;-webkit-appearance:none}
+.search-fi:focus{border-color:var(--blue)}
+.search-fi::placeholder{color:rgba(255,255,255,.22)}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--text2);pointer-events:none}
+
+/* Statistics Page */
+.chart-section{margin-bottom:24px}
+.chart-title{font-size:16px;font-weight:700;margin-bottom:14px}
+.bar-chart{display:flex;align-items:flex-end;gap:8px;height:180px;padding:10px 0}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px}
+.bar-rect{width:100%;border-radius:8px 8px 4px 4px;background:linear-gradient(180deg,var(--blue),rgba(10,132,255,.5));
+transition:height .6s cubic-bezier(.4,0,.2,1);min-height:4px}
+.bar-val{font-size:11px;font-weight:600;color:var(--text2)}
+.bar-lbl{font-size:10px;color:var(--text3);text-align:center;line-height:1.2}
+.cat-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.cat-bar-icon{font-size:18px;width:28px;text-align:center;flex-shrink:0}
+.cat-bar-info{flex:1;min-width:0}
+.cat-bar-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.cat-bar-name{font-size:13px;font-weight:500}
+.cat-bar-val{font-size:12px;color:var(--text2)}
+.cat-bar-track{height:6px;background:var(--card2);border-radius:3px;overflow:hidden}
+.cat-bar-fill{height:100%;border-radius:3px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+.cmp-row{display:flex;gap:12px;margin-bottom:14px}
+.cmp-card{flex:1;background:var(--card);border-radius:16px;padding:16px;text-align:center}
+.cmp-lbl{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+.cmp-val{font-size:24px;font-weight:700;margin-top:6px}
+.cmp-diff{font-size:12px;margin-top:4px;font-weight:600}
+.cat-cmp-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:.5px solid rgba(255,255,255,.06)}
+.cat-cmp-row:last-child{border-bottom:none}
+.cat-cmp-icon{font-size:18px;width:28px;text-align:center;flex-shrink:0}
+.cat-cmp-info{flex:1;min-width:0}
+.cat-cmp-name{font-size:13px;font-weight:500}
+.cat-cmp-vals{font-size:12px;color:var(--text2);margin-top:2px}
+.cat-cmp-diff{font-size:13px;font-weight:700;flex-shrink:0;padding:4px 10px;border-radius:8px}
+.cat-cmp-diff.better{color:var(--green);background:rgba(50,215,75,.1)}
+.cat-cmp-diff.worse{color:var(--red);background:rgba(255,69,58,.1)}
+.cat-cmp-diff.same{color:var(--text2);background:var(--card2)}
+.ai-insight{background:linear-gradient(135deg,rgba(10,132,255,.08),rgba(191,90,242,.06));
+border:1px solid rgba(10,132,255,.15);border-radius:16px;padding:16px;margin-bottom:10px}
+.ai-insight-ico{font-size:20px;margin-bottom:4px}
+.ai-insight-txt{font-size:14px;line-height:1.5;color:rgba(255,255,255,.88)}
+
+/* Shared Wallet */
+.sw-code{font-size:32px;font-weight:800;letter-spacing:4px;text-align:center;
+padding:16px;background:var(--card2);border-radius:14px;margin:12px 0;color:var(--blue);font-family:monospace}
+.sw-status{display:flex;align-items:center;gap:8px;padding:12px 16px;background:rgba(50,215,75,.08);
+border:1px solid rgba(50,215,75,.15);border-radius:14px;margin-bottom:12px}
+.sw-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:blink 2s infinite}
+.sw-txt{font-size:14px;color:var(--green);font-weight:500}
+.sw-input-row{display:flex;gap:8px;margin-top:8px}
+.sw-input-row .fi{flex:1;text-align:center;font-size:18px;letter-spacing:4px;font-family:monospace}
+.sw-input-row .btn{width:auto;padding:14px 20px;flex-shrink:0}
 
 /* Settings */
 .ss{margin-bottom:24px}
@@ -191,7 +302,6 @@ border-radius:10px;color:var(--text);font-size:15px;text-align:right;font-family
 
 /* Logout */
 .logout-row{display:flex;align-items:center;gap:14px;padding:16px;background:var(--card);border-radius:14px;margin-bottom:16px}
-.logout-ava{width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--blue)}
 .logout-info{flex:1}
 .logout-name{font-size:15px;font-weight:600}
 .logout-email{font-size:12px;color:var(--text2);margin-top:2px}
@@ -230,6 +340,7 @@ opacity:0;transition:all .3s cubic-bezier(.32,.72,0,1);pointer-events:none;max-w
 .cc-health{background:rgba(50,215,75,.15);color:var(--green)}
 .cc-bills{background:rgba(255,69,58,.15);color:var(--red)}
 .cc-other{background:rgba(142,142,147,.15);color:var(--text2)}
+.cc-income{background:rgba(50,215,75,.15);color:var(--green)}
 
 /* Loading */
 .ld{position:fixed;inset:0;z-index:500;background:var(--bg);
@@ -239,14 +350,29 @@ display:flex;flex-direction:column;align-items:center;justify-content:center;gap
 @keyframes spin{to{transform:rotate(360deg)}}
 .ld-t{font-size:14px;color:var(--text2)}
 
-/* App container - hidden until login */
+/* Bills checklist */
+.bill-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--card2);
+border-radius:12px;margin-bottom:6px;cursor:pointer;transition:all .15s}
+.bill-item:active{transform:scale(.98);opacity:.85}
+.bill-ico{font-size:20px;width:28px;text-align:center;flex-shrink:0}
+.bill-info{flex:1;min-width:0}
+.bill-name{font-size:14px;font-weight:500}
+.bill-amt{font-size:12px;color:var(--text2);margin-top:1px}
+.bill-status{padding:5px 10px;border-radius:8px;font-size:11px;font-weight:700;flex-shrink:0}
+.bill-status.pending{background:rgba(255,159,10,.12);color:var(--orange)}
+.bill-status.paid{background:rgba(50,215,75,.12);color:var(--green)}
+.bill-add-row{display:flex;gap:8px;margin-top:8px}
+.bill-add-row .fi{padding:10px 12px;font-size:14px}
+.bill-add-row .fi.sm{width:50px;flex-shrink:0;text-align:center}
+
+/* App container */
 .app-wrap{display:none}
 .app-wrap.show{display:block}
 </style>
 </head>
 <body>
 
-<!-- ═══ Login Screen ═══ -->
+<!-- Login Screen -->
 <div class="login-screen" id="loginScr">
 <div class="login-logo">💰</div>
 <div class="login-title">SmartWallet AI</div>
@@ -260,7 +386,7 @@ display:flex;flex-direction:column;align-items:center;justify-content:center;gap
 </div>
 </div>
 
-<!-- ═══ Loading ═══ -->
+<!-- Loading -->
 <div class="ld hide" id="loadScr">
 <div class="ld-sp"></div>
 <div class="ld-t">Φόρτωση δεδομένων...</div>
@@ -269,7 +395,7 @@ display:flex;flex-direction:column;align-items:center;justify-content:center;gap
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
-<!-- ═══ Main App (hidden until login) ═══ -->
+<!-- Main App -->
 <div class="app-wrap" id="appWrap">
 
 <!-- Header -->
@@ -293,6 +419,24 @@ display:flex;flex-direction:column;align-items:center;justify-content:center;gap
 <div class="bal-n pos" id="balNum">0,00€</div>
 <div class="bal-l" id="balLbl">από 0,00€ εισόδημα</div>
 </div>
+
+<!-- Savings Tracker -->
+<div class="sav-c c" id="savCard">
+<div class="c-t">Αποταμίευση Μήνα</div>
+<div class="sav-amt" id="savAmt">0€ / 0€</div>
+<div class="sav-bar"><div class="sav-fill" id="savFill" style="width:0%"></div></div>
+<div class="sav-msg" id="savMsg">Πρόσθεσε έξοδα για να δεις την πρόοδο!</div>
+</div>
+
+<!-- Quick Add (dynamic) -->
+<div class="qa-row" id="qaRow"></div>
+
+<!-- Bills Checklist -->
+<div class="c" id="billsCard">
+<div class="c-t">Πάγια Έξοδα Μήνα</div>
+<div id="billsList"></div>
+</div>
+
 <div class="st-row">
 <div class="st-card"><div class="st-lbl">Εβδομαδιαίο</div><div class="st-val" id="wkVal" style="color:var(--blue)">0€</div></div>
 <div class="st-card"><div class="st-lbl">Ημερήσιο</div><div class="st-val" id="dyVal" style="color:var(--teal)">0€</div></div>
@@ -305,7 +449,35 @@ display:flex;flex-direction:column;align-items:center;justify-content:center;gap
 
 <!-- Transactions -->
 <div class="pg" id="pgTx">
+<div class="search-wrap">
+<span class="search-icon">🔍</span>
+<input type="text" class="search-fi" id="txSearch" placeholder="Αναζήτηση συναλλαγών..." oninput="renderTxPage()">
+</div>
 <div class="c"><div class="c-t">Όλες οι Συναλλαγές</div><div id="allTx"></div></div>
+</div>
+
+<!-- Statistics -->
+<div class="pg" id="pgStats">
+<div class="chart-section">
+<div class="chart-title">Σύγκριση Τρέχοντος vs Προηγούμενου</div>
+<div class="cmp-row" id="cmpRow"></div>
+</div>
+<div class="chart-section c">
+<div class="c-t">Έξοδα Τελευταίων 6 Μηνών</div>
+<div class="bar-chart" id="barChart"></div>
+</div>
+<div class="chart-section c">
+<div class="c-t">Ανάλυση ανά Κατηγορία</div>
+<div id="catBreakdown"></div>
+</div>
+<div class="chart-section c">
+<div class="c-t">Σύγκριση ανά Κατηγορία (vs Προηγ. Μήνα)</div>
+<div id="catCompare"></div>
+</div>
+<div class="chart-section" id="aiInsightsSection">
+<div class="chart-title">🤖 AI Ανάλυση Μήνα</div>
+<div id="aiInsights"></div>
+</div>
 </div>
 
 <!-- Settings -->
@@ -332,17 +504,65 @@ display:flex;flex-direction:column;align-items:center;justify-content:center;gap
 </div>
 <div class="ss">
 <div class="ss-t">Πάγια Έξοδα</div>
-<div class="sr"><span class="sr-l">Ενοίκιο / Λογαριασμοί</span><div style="display:flex;align-items:center"><input type="number" class="sr-i" id="sRent" inputmode="decimal"><span class="sr-s">€</span></div></div>
-<div class="sr"><span class="sr-l">Δάνειο / Δόσεις</span><div style="display:flex;align-items:center"><input type="number" class="sr-i" id="sLoan" inputmode="decimal"><span class="sr-s">€</span></div></div>
-<div class="sr"><span class="sr-l">Γυμναστήριο</span><div style="display:flex;align-items:center"><input type="number" class="sr-i" id="sGym" inputmode="decimal"><span class="sr-s">€</span></div></div>
+<div id="billsManageList"></div>
+<div class="bill-add-row" id="billAddRow" style="display:none">
+<input type="text" class="fi sm" id="billNewIcon" placeholder="🏠" maxlength="2">
+<input type="text" class="fi" id="billNewName" placeholder="Όνομα" style="flex:1">
+<input type="number" class="fi sm" id="billNewAmt" placeholder="€" inputmode="decimal" style="width:80px">
+<button class="btn btn-g" onclick="saveNewBill()" style="width:auto;padding:10px 16px;flex-shrink:0">✓</button>
+</div>
+<div style="display:flex;gap:8px;margin-top:8px">
+<button class="btn btn-s" id="billAddBtn" onclick="toggleBillForm(true)">+ Νέο Πάγιο</button>
+<button class="btn btn-s" id="billCancelBtn" onclick="toggleBillForm(false)" style="display:none">Ακύρωση</button>
+</div>
 </div>
 <div class="ss">
 <div class="ss-t">Προϋπολογισμοί</div>
 <div class="sr"><span class="sr-l">Σούπερ Μάρκετ</span><div style="display:flex;align-items:center"><input type="number" class="sr-i" id="sSup" inputmode="decimal"><span class="sr-s">€</span></div></div>
 </div>
+
+<!-- Quick Add Management -->
+<div class="ss">
+<div class="ss-t">Γρήγορα Κουμπιά</div>
+<div id="qaManageList"></div>
+<div class="qa-add-form" id="qaAddForm" style="display:none">
+<div class="qa-add-row">
+<input type="text" class="fi sm" id="qaNewIcon" placeholder="😀" maxlength="2">
+<input type="text" class="fi" id="qaNewName" placeholder="Όνομα" style="flex:1">
+<input type="number" class="fi sm" id="qaNewAmt" placeholder="€" inputmode="decimal" style="width:70px">
+</div>
+<div class="qa-add-type-row">
+<button class="qa-add-type-btn sel-exp" id="qaTypeExp" onclick="setQaType('expense')">Έξοδο</button>
+<button class="qa-add-type-btn" id="qaTypeInc" onclick="setQaType('income')">Έσοδο</button>
+</div>
+<div class="fg" id="qaNewCatWrap">
+<label class="fl">Κατηγορία</label>
+<div class="cg" id="qaNewCatG"></div>
+</div>
+<div style="display:flex;gap:8px">
+<button class="btn btn-g" onclick="saveNewQa()" style="flex:1">Προσθήκη</button>
+<button class="btn btn-s" onclick="toggleQaForm(false)" style="flex:1">Ακύρωση</button>
+</div>
+</div>
+<button class="btn btn-s" id="qaAddBtn" onclick="toggleQaForm(true)" style="margin-top:8px">+ Νέο Κουμπί</button>
+</div>
+
+<!-- Shared Wallet -->
+<div class="ss">
+<div class="ss-t">Κοινό Πορτοφόλι</div>
+<div id="swStatus"></div>
+<div id="swActions"></div>
+</div>
+
+<!-- CSV Export -->
+<div class="ss">
+<div class="ss-t">Εξαγωγή Δεδομένων</div>
+<button class="btn btn-s" onclick="exportCSV()" style="margin-bottom:8px">📥 Εξαγωγή CSV</button>
+</div>
+
 <button class="btn btn-b" id="saveBtn" onclick="saveSettings()">Αποθήκευση Ρυθμίσεων</button>
 <button class="rst" onclick="confirmReset()">Επαναφορά Όλων των Δεδομένων</button>
-<div class="ver">SmartWallet AI v4.0 — Firebase Auth + Firestore<br>Τα δεδομένα σου, παντού, πάντα.</div>
+<div class="ver">SmartWallet AI v5.1 — Firebase + Shared Wallet + Custom Quick Add<br>Τα δεδομένα σου, παντού, πάντα.</div>
 </div>
 
 <!-- FAB -->
@@ -352,18 +572,26 @@ display:flex;flex-direction:column;align-items:center;justify-content:center;gap
 <nav class="nav">
 <button class="nav-i on" data-pg="pgDash" onclick="go('pgDash',this)"><span class="nav-ic">📊</span>Αρχική</button>
 <button class="nav-i" data-pg="pgTx" onclick="go('pgTx',this)"><span class="nav-ic">📋</span>Συναλλαγές</button>
+<button class="nav-i" data-pg="pgStats" onclick="go('pgStats',this)"><span class="nav-ic">📈</span>Στατιστικά</button>
 <button class="nav-i" data-pg="pgSet" onclick="go('pgSet',this)"><span class="nav-ic">⚙️</span>Ρυθμίσεις</button>
 </nav>
-</div><!-- /app-wrap -->
+</div>
 
 <!-- Add Modal -->
 <div class="mo" id="addMo">
 <div class="mo-s">
 <div class="mo-h"></div>
-<div class="mo-t">Νέα Συναλλαγή</div>
+<div class="mo-t" id="moTitle">Νέα Συναλλαγή</div>
+
+<!-- Type toggle -->
+<div class="type-tog">
+<button class="type-btn sel-exp" id="typeBtnExp" onclick="setTxType('expense')">Έξοδο</button>
+<button class="type-btn" id="typeBtnInc" onclick="setTxType('income')">Έσοδο</button>
+</div>
+
 <div class="fg"><label class="fl">Ποσό (€)</label><input type="number" class="fi" id="txAmt" placeholder="π.χ. 25.50" inputmode="decimal" step="0.01"></div>
 <div class="fg"><label class="fl">Περιγραφή</label><input type="text" class="fi" id="txDsc" placeholder="π.χ. Καφές με φίλους" autocomplete="off"></div>
-<div class="fg">
+<div class="fg" id="catWrap">
 <label class="fl">Κατηγορία</label>
 <div class="cg" id="catG">
 <div class="ct" data-c="food" onclick="selCat(this)">🍕 Φαγητό</div>
@@ -376,7 +604,7 @@ display:flex;flex-direction:column;align-items:center;justify-content:center;gap
 <div class="ct" data-c="other" onclick="selCat(this)">📌 Άλλο</div>
 </div>
 </div>
-<button class="btn btn-g" onclick="addTx()">Προσθήκη Εξόδου</button>
+<button class="btn btn-g" id="txSubmitBtn" onclick="addTx()">Προσθήκη Εξόδου</button>
 <button class="btn btn-s" style="margin-top:10px" onclick="closeMo()">Ακύρωση</button>
 </div>
 </div>
@@ -392,10 +620,9 @@ display:flex;flex-direction:column;align-items:center;justify-content:center;gap
 </div>
 </div>
 
-<!-- ═══════════════════════════════ -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-import { getFirestore, collection, doc, addDoc, deleteDoc, setDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { getFirestore, collection, doc, addDoc, deleteDoc, setDoc, getDoc, getDocs, updateDoc, onSnapshot, query, orderBy, where } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -411,22 +638,42 @@ const firebaseConfig = {
 const fbApp = initializeApp(firebaseConfig);
 const auth = getAuth(fbApp);
 const db = getFirestore(fbApp);
-let isLoginMode = true; // true=login, false=register
+let isLoginMode = true;
 
 // ── State ──
 const CATS={food:{label:'Φαγητό',icon:'🍕',css:'cc-food'},super:{label:'Σούπερ Μάρκετ',icon:'🛒',css:'cc-super'},
 transport:{label:'Μεταφορικά',icon:'🚗',css:'cc-transport'},ent:{label:'Ψυχαγωγία',icon:'🎬',css:'cc-ent'},
 shop:{label:'Αγορές',icon:'🛍️',css:'cc-shop'},health:{label:'Υγεία',icon:'💊',css:'cc-health'},
-bills:{label:'Λογαριασμοί',icon:'📄',css:'cc-bills'},other:{label:'Άλλο',icon:'📌',css:'cc-other'}};
+bills:{label:'Λογαριασμοί',icon:'📄',css:'cc-bills'},other:{label:'Άλλο',icon:'📌',css:'cc-other'},
+income:{label:'Έσοδο',icon:'💵',css:'cc-income'}};
 
-const DEF={income:1150,savings:200,rent:200,loan:120,gym:70,supermarket:150};
-let settings={...DEF};
+const DEFAULT_QA=[
+  {icon:'☕',name:'Καφές',cat:'food',amount:2,type:'expense'},
+  {icon:'⛽',name:'Βενζίνη',cat:'transport',amount:20,type:'expense'},
+  {icon:'🚬',name:'Τσιγάρα',cat:'other',amount:5,type:'expense'},
+  {icon:'🍔',name:'Φαγητό',cat:'food',amount:10,type:'expense'},
+  {icon:'🛒',name:'Σούπερ',cat:'super',amount:30,type:'expense'}
+];
+
+const DEFAULT_BILLS=[
+  {id:'rent',name:'Ενοίκιο',icon:'🏠',amount:0,cat:'bills'},
+  {id:'loan',name:'Δάνειο',icon:'🏦',amount:0,cat:'bills'},
+  {id:'gym',name:'Γυμναστήριο',icon:'💪',amount:0,cat:'health'}
+];
+
+// New users start with zeros — they fill in their own values
+const DEF={income:0,savings:0,rent:0,loan:0,gym:0,supermarket:0,lastRecurringMonth:'',walletId:'',quickAdds:DEFAULT_QA,fixedBills:DEFAULT_BILLS,paidBills:{}};
+let settings={...DEF,quickAdds:[...DEFAULT_QA],fixedBills:[...DEFAULT_BILLS],paidBills:{}};
 let transactions=[];
 let selCategory=null;
+let txType='expense'; // current modal type
+let qaNewType='expense'; // quick-add form type
+let qaNewCat=null;
 let cfmCb=null;
 let currentUser=null;
 let unsubTx=null;
 let unsubSet=null;
+let activeWalletId='';
 
 const $=id=>document.getElementById(id);
 const fmt=n=>n.toLocaleString('el-GR',{minimumFractionDigits:2,maximumFractionDigits:2})+'€';
@@ -437,18 +684,35 @@ const dleft=()=>Math.max(0,dim()-now().getDate());
 const wleft=()=>Math.max(1,Math.ceil(dleft()/7));
 const dleftN=()=>Math.max(1,dleft()||1);
 
+// ── Calculation helpers (income-aware) ──
 function mTx(){const n=now(),y=n.getFullYear(),m=n.getMonth();
 return transactions.filter(t=>{const d=new Date(t.date);return d.getFullYear()===y&&d.getMonth()===m});}
-function cSum(c){return mTx().filter(t=>t.category===c).reduce((s,t)=>s+t.amount,0);}
-function tSpent(){return mTx().reduce((s,t)=>s+t.amount,0);}
-function fixed(){return settings.rent+settings.loan+settings.gym;}
-function safe(){return settings.income-fixed()-settings.savings-tSpent();}
+
+function mExpenses(){return mTx().filter(t=>t.type!=='income');}
+function mIncomes(){return mTx().filter(t=>t.type==='income');}
+function tSpent(){return mExpenses().reduce((s,t)=>s+t.amount,0);}
+function tExtraIncome(){return mIncomes().reduce((s,t)=>s+t.amount,0);}
+function totalIncome(){return settings.income+tExtraIncome();}
+function cSum(c){return mExpenses().filter(t=>t.category===c).reduce((s,t)=>s+t.amount,0);}
+function fixed(){
+  const bills = settings.fixedBills || [];
+  return bills.reduce((s,b)=>s+(b.amount||0),0);
+}
+function safe(){return totalIncome()-fixed()-settings.savings-tSpent();}
+
+// Month-specific helpers
+function txForMonth(year,month){
+return transactions.filter(t=>{const d=new Date(t.date);return d.getFullYear()===year&&d.getMonth()===month;});}
+function expensesForMonth(year,month){return txForMonth(year,month).filter(t=>t.type!=='income');}
+function spentForMonth(year,month){return expensesForMonth(year,month).reduce((s,t)=>s+t.amount,0);}
+function catSumForMonth(cat,year,month){return expensesForMonth(year,month).filter(t=>t.category===cat).reduce((s,t)=>s+t.amount,0);}
 
 function fDate(d){const dt=new Date(d);
 const mo=['Ιαν','Φεβ','Μαρ','Απρ','Μαΐ','Ιουν','Ιουλ','Αυγ','Σεπ','Οκτ','Νοε','Δεκ'];
 const dy=['Κυρ','Δευ','Τρι','Τετ','Πεμ','Παρ','Σαβ'];
 return `${dy[dt.getDay()]}, ${dt.getDate()} ${mo[dt.getMonth()]}`;}
 function fTime(d){const dt=new Date(d);return dt.getHours().toString().padStart(2,'0')+':'+dt.getMinutes().toString().padStart(2,'0');}
+const MONTH_NAMES=['Ιαν','Φεβ','Μαρ','Απρ','Μαΐ','Ιουν','Ιουλ','Αυγ','Σεπ','Οκτ','Νοε','Δεκ'];
 
 // ── Toast ──
 let toastT;
@@ -460,16 +724,49 @@ window.go=(p,b)=>{document.querySelectorAll('.pg').forEach(x=>x.classList.remove
 $(p).classList.add('on');document.querySelectorAll('.nav-i').forEach(x=>x.classList.remove('on'));
 if(b)b.classList.add('on');
 const t={pgDash:['SmartWallet AI','Ο προσωπικός σου οικονομικός βοηθός'],
-pgTx:['Συναλλαγές','Ιστορικό εξόδων'],pgSet:['Ρυθμίσεις','Διαχείριση προϋπολογισμού']};
+pgTx:['Συναλλαγές','Ιστορικό εξόδων'],pgStats:['Στατιστικά','Ανάλυση εξόδων'],pgSet:['Ρυθμίσεις','Διαχείριση προϋπολογισμού']};
 const v=t[p]||t.pgDash;$('pgTitle').textContent=v[0];$('pgSub').textContent=v[1];
-$('fab').style.display=p==='pgSet'?'none':'flex';};
+$('fab').style.display=(p==='pgSet'||p==='pgStats')?'none':'flex';
+if(p==='pgStats') renderStats();
+};
 
 // ── Modal ──
-window.openModal=()=>{$('txAmt').value='';$('txDsc').value='';selCategory=null;
-document.querySelectorAll('.ct').forEach(t=>t.classList.remove('sel'));$('addMo').classList.add('open');};
+window.openModal=()=>{
+  $('txAmt').value='';$('txDsc').value='';selCategory=null;txType='expense';
+  document.querySelectorAll('#catG .ct').forEach(t=>t.classList.remove('sel'));
+  $('typeBtnExp').className='type-btn sel-exp';
+  $('typeBtnInc').className='type-btn';
+  $('catWrap').style.display='';
+  $('txSubmitBtn').textContent='Προσθήκη Εξόδου';
+  $('txSubmitBtn').className='btn btn-g';
+  $('moTitle').textContent='Νέα Συναλλαγή';
+  $('addMo').classList.add('open');
+};
 window.closeMo=()=>$('addMo').classList.remove('open');
 $('addMo').addEventListener('click',e=>{if(e.target===$('addMo'))window.closeMo();});
-window.selCat=el=>{document.querySelectorAll('.ct').forEach(t=>t.classList.remove('sel'));el.classList.add('sel');selCategory=el.dataset.c;};
+window.selCat=el=>{document.querySelectorAll('#catG .ct').forEach(t=>t.classList.remove('sel'));el.classList.add('sel');selCategory=el.dataset.c;};
+
+// ── Type toggle in modal ──
+window.setTxType=(type)=>{
+  txType=type;
+  if(type==='expense'){
+    $('typeBtnExp').className='type-btn sel-exp';
+    $('typeBtnInc').className='type-btn';
+    $('catWrap').style.display='';
+    $('txSubmitBtn').textContent='Προσθήκη Εξόδου';
+    $('txSubmitBtn').className='btn btn-g';
+    $('txDsc').placeholder='π.χ. Καφές με φίλους';
+  } else {
+    $('typeBtnExp').className='type-btn';
+    $('typeBtnInc').className='type-btn sel-inc';
+    $('catWrap').style.display='none';
+    selCategory='income';
+    $('txSubmitBtn').textContent='Προσθήκη Εσόδου';
+    $('txSubmitBtn').className='btn btn-g';
+    $('txSubmitBtn').style.background='var(--green)';
+    $('txDsc').placeholder='π.χ. Στοίχημα, Freelance, Δώρο';
+  }
+};
 
 // ── Shake ──
 const shk=document.createElement('style');
@@ -484,7 +781,25 @@ function showCfm(m,cb){$('cfmMsg').textContent=m;cfmCb=cb;$('cfmOv').classList.a
 $('cfmYes').addEventListener('click',()=>{if(cfmCb)cfmCb();window.closeCfm();});
 
 // ═══════════════════════════════
-// AUTH (Email/Password)
+// FIRESTORE PATH HELPERS (wallet-aware)
+// ═══════════════════════════════
+function txCol(){
+  if(activeWalletId) return collection(db,'wallets',activeWalletId,'transactions');
+  return collection(db,'users',currentUser.uid,'transactions');
+}
+function txDocRef(id){
+  if(activeWalletId) return doc(db,'wallets',activeWalletId,'transactions',id);
+  return doc(db,'users',currentUser.uid,'transactions',id);
+}
+function settingsRef(){
+  if(activeWalletId) return doc(db,'wallets',activeWalletId,'settings','config');
+  return doc(db,'users',currentUser.uid,'settings','config');
+}
+function userDoc(uid,path){return doc(db,'users',uid,...path.split('/'));}
+function userCol(uid,col){return collection(db,'users',uid,col);}
+
+// ═══════════════════════════════
+// AUTH
 // ═══════════════════════════════
 const AUTH_ERRORS = {
   'auth/email-already-in-use':'Αυτό το email χρησιμοποιείται ήδη.',
@@ -511,28 +826,20 @@ window.doAuth = async () => {
   const email = $('authEmail').value.trim();
   const pass = $('authPass').value;
   $('authErr').textContent = '';
-
   if(!email){$('authErr').textContent='Βάλε το email σου.';shake('authEmail');return;}
   if(!pass){$('authErr').textContent='Βάλε τον κωδικό σου.';shake('authPass');return;}
-
   $('authBtn').textContent = 'Περίμενε...';
   $('authBtn').style.opacity = '0.6';
-
   try {
-    if(isLoginMode) {
-      await signInWithEmailAndPassword(auth, email, pass);
-    } else {
-      await createUserWithEmailAndPassword(auth, email, pass);
-    }
+    if(isLoginMode) await signInWithEmailAndPassword(auth, email, pass);
+    else await createUserWithEmailAndPassword(auth, email, pass);
   } catch(e) {
-    const msg = AUTH_ERRORS[e.code] || 'Σφάλμα: ' + e.message;
-    $('authErr').textContent = msg;
+    $('authErr').textContent = AUTH_ERRORS[e.code] || 'Σφάλμα: ' + e.message;
     $('authBtn').textContent = isLoginMode ? 'Σύνδεση' : 'Δημιουργία Λογαριασμού';
     $('authBtn').style.opacity = '1';
   }
 };
 
-// Enter key to submit
 $('authPass').addEventListener('keydown', e => { if(e.key==='Enter') window.doAuth(); });
 $('authEmail').addEventListener('keydown', e => { if(e.key==='Enter') $('authPass').focus(); });
 
@@ -540,7 +847,7 @@ window.doLogout = async ()=>{
   showCfm('Αποσύνδεση από τον λογαριασμό;', async ()=>{
     if(unsubTx) unsubTx();
     if(unsubSet) unsubSet();
-    transactions=[];settings={...DEF};
+    transactions=[];settings={...DEF,quickAdds:[...DEFAULT_QA],fixedBills:[...DEFAULT_BILLS],paidBills:{}};activeWalletId='';
     await signOut(auth);
   });
 };
@@ -552,12 +859,9 @@ onAuthStateChanged(auth, user => {
     $('appWrap').classList.add('show');
     $('loadScr').classList.remove('hide');
     $('loadScr').style.display='flex';
-
-    // User info
     $('setName').textContent=user.email.split('@')[0];
     $('setEmail').textContent=user.email;
-
-    startListeners(user.uid);
+    initUser(user.uid);
   } else {
     currentUser = null;
     $('loginScr').classList.remove('hide');
@@ -568,16 +872,33 @@ onAuthStateChanged(auth, user => {
 });
 
 // ═══════════════════════════════
-// FIRESTORE (user-scoped)
+// INIT USER
 // ═══════════════════════════════
-function userDoc(uid,path){return doc(db,'users',uid,...path.split('/'));}
-function userCol(uid,col){return collection(db,'users',uid,col);}
+async function initUser(uid){
+  const personalRef = userDoc(uid,'settings/config');
+  try {
+    const snap = await getDoc(personalRef);
+    if(snap.exists() && snap.data().walletId){
+      activeWalletId = snap.data().walletId;
+    } else {
+      activeWalletId = '';
+    }
+  } catch(e){ activeWalletId=''; }
+  startListeners(uid);
+}
 
+// ═══════════════════════════════
+// FIRESTORE LISTENERS
+// ═══════════════════════════════
 function startListeners(uid) {
-  // Transactions
-  const tq = query(userCol(uid,'transactions'), orderBy('date','desc'));
+  if(unsubTx) unsubTx();
+  if(unsubSet) unsubSet();
+
+  const tq = query(txCol(), orderBy('date','desc'));
   unsubTx = onSnapshot(tq, snap=>{
     transactions = snap.docs.map(d=>({id:d.id,...d.data()}));
+    // Ensure all transactions have type field (backward compat)
+    transactions.forEach(t=>{ if(!t.type) t.type='expense'; });
     renderAll();
     hideLoading();
   }, err=>{
@@ -586,17 +907,32 @@ function startListeners(uid) {
     hideLoading();
   });
 
-  // Settings
-  const sRef = userDoc(uid,'settings/config');
+  const sRef = settingsRef();
   unsubSet = onSnapshot(sRef, snap=>{
     if(snap.exists()){
-      settings={...DEF,...snap.data()};
+      const data = snap.data();
+      settings={...DEF,...data};
+      if(!Array.isArray(settings.quickAdds)) settings.quickAdds=[...DEFAULT_QA];
+      settings.quickAdds.forEach(q=>{ if(!q.type) q.type='expense'; });
+      // Migrate old rent/loan/gym to fixedBills if no fixedBills yet
+      if(!Array.isArray(settings.fixedBills)){
+        settings.fixedBills = [
+          {id:'rent',name:'Ενοίκιο',icon:'🏠',amount:settings.rent||0,cat:'bills'},
+          {id:'loan',name:'Δάνειο',icon:'🏦',amount:settings.loan||0,cat:'bills'},
+          {id:'gym',name:'Γυμναστήριο',icon:'💪',amount:settings.gym||0,cat:'health'}
+        ].filter(b=>b.amount>0);
+        if(!settings.fixedBills.length) settings.fixedBills=[...DEFAULT_BILLS];
+      }
+      if(!settings.paidBills || typeof settings.paidBills!=='object') settings.paidBills={};
     } else {
-      settings={...DEF};
-      setDoc(sRef,DEF).catch(()=>{});
+      settings={...DEF,quickAdds:[...DEFAULT_QA],fixedBills:[...DEFAULT_BILLS],paidBills:{}};
+      setDoc(sRef,{...DEF,quickAdds:DEFAULT_QA,fixedBills:DEFAULT_BILLS,paidBills:{}}).catch(()=>{});
     }
     fillSettings();
     renderAll();
+    renderSharedWalletUI();
+    renderQaManage();
+    renderBillsManage();
   });
 }
 
@@ -606,28 +942,273 @@ function hideLoading(){
   setTimeout(()=>{$('loadScr').style.display='none';},400);
 }
 
-// ── Add TX ──
+// ═══════════════════════════════
+// BILLS CHECKLIST (paid/pending)
+// ═══════════════════════════════
+function currentMonthKey(){
+  const n=now();
+  return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}`;
+}
+
+function isBillPaid(billId){
+  const key=currentMonthKey();
+  const paid=settings.paidBills||{};
+  return Array.isArray(paid[key]) && paid[key].includes(billId);
+}
+
+function renderBills(){
+  const bills=settings.fixedBills||[];
+  if(!bills.length || bills.every(b=>!b.amount)){
+    $('billsCard').style.display='none';
+    return;
+  }
+  $('billsCard').style.display='';
+  const activeBills=bills.filter(b=>b.amount>0);
+  if(!activeBills.length){ $('billsList').innerHTML='<div style="color:var(--text2);font-size:13px">Βάλε ποσά στα πάγια στις Ρυθμίσεις.</div>'; return; }
+
+  const paidCount=activeBills.filter(b=>isBillPaid(b.id)).length;
+  const totalCount=activeBills.length;
+
+  let h=`<div style="font-size:12px;color:var(--text2);margin-bottom:8px">${paidCount}/${totalCount} πληρώθηκαν</div>`;
+  activeBills.forEach(b=>{
+    const paid=isBillPaid(b.id);
+    h+=`<div class="bill-item" onclick="${paid?'':'payBill(\''+b.id+'\')'}" style="${paid?'opacity:.7;cursor:default':''}">
+      <div class="bill-ico">${b.icon||'📄'}</div>
+      <div class="bill-info">
+        <div class="bill-name">${esc(b.name)}</div>
+        <div class="bill-amt">${fmt(b.amount)}</div>
+      </div>
+      <div class="bill-status ${paid?'paid':'pending'}">${paid?'✓ Πληρώθηκε':'Εκκρεμεί'}</div>
+    </div>`;
+  });
+  $('billsList').innerHTML=h;
+}
+
+window.payBill = (billId)=>{
+  const bill=(settings.fixedBills||[]).find(b=>b.id===billId);
+  if(!bill||!currentUser) return;
+  showCfm(`Πλήρωσες "${bill.name}" (${fmt(bill.amount)});`, async()=>{
+    try{
+      // Create transaction
+      await addDoc(txCol(),{
+        amount:bill.amount, description:bill.name, category:bill.cat||'bills',
+        date:now().toISOString(), createdAt:Date.now(),
+        recurring:true, type:'expense'
+      });
+      // Mark as paid
+      const key=currentMonthKey();
+      const paid={...(settings.paidBills||{})};
+      if(!Array.isArray(paid[key])) paid[key]=[];
+      paid[key].push(billId);
+      await updateDoc(settingsRef(),{paidBills:paid});
+      toast(`${bill.name} πληρώθηκε!`,'ok');
+    }catch(e){toast('Σφάλμα','err');console.error(e);}
+  });
+};
+
+// Bills management in settings
+function renderBillsManage(){
+  const bills=settings.fixedBills||[];
+  let h='';
+  bills.forEach((b,i)=>{
+    h+=`<div class="qa-item">
+      <div class="qa-item-ico">${b.icon||'📄'}</div>
+      <div class="qa-item-info">${esc(b.name)}</div>
+      <div class="qa-item-amt expense">${b.amount>0?fmt(b.amount):'0€'}</div>
+      <button class="qa-item-del" onclick="removeBill(${i})">✕</button>
+    </div>`;
+  });
+  $('billsManageList').innerHTML=h||'<div style="color:var(--text2);font-size:13px;padding:8px 0">Δεν υπάρχουν πάγια ακόμα.</div>';
+}
+
+window.toggleBillForm=(show)=>{
+  $('billAddRow').style.display=show?'flex':'none';
+  $('billAddBtn').style.display=show?'none':'';
+  $('billCancelBtn').style.display=show?'':'none';
+  if(show){$('billNewIcon').value='';$('billNewName').value='';$('billNewAmt').value='';}
+};
+
+window.saveNewBill=async()=>{
+  if(!currentUser)return;
+  const icon=$('billNewIcon').value.trim()||'📄';
+  const name=$('billNewName').value.trim();
+  const amount=parseFloat($('billNewAmt').value);
+  if(!name){toast('Βάλε όνομα','err');return;}
+  if(!amount||amount<=0){toast('Βάλε ποσό','err');return;}
+  const id='bill_'+Date.now();
+  const bills=[...(settings.fixedBills||[])];
+  bills.push({id,name,icon,amount,cat:'bills'});
+  try{
+    await updateDoc(settingsRef(),{fixedBills:bills});
+    toast('Πάγιο προστέθηκε!','ok');
+    window.toggleBillForm(false);
+  }catch(e){toast('Σφάλμα','err');}
+};
+
+window.removeBill=async(idx)=>{
+  if(!currentUser)return;
+  const bills=[...(settings.fixedBills||[])];
+  const name=bills[idx]?.name||'';
+  showCfm(`Αφαίρεση "${name}" από τα πάγια;`,async()=>{
+    bills.splice(idx,1);
+    try{
+      await updateDoc(settingsRef(),{fixedBills:bills});
+      toast('Πάγιο αφαιρέθηκε','ok');
+    }catch(e){toast('Σφάλμα','err');}
+  });
+};
+
+// ═══════════════════════════════
+// QUICK ADD (dynamic from settings)
+// ═══════════════════════════════
+window.quickAdd = async (desc, cat, amount, type) => {
+  if(!currentUser) return;
+  type = type || 'expense';
+  try {
+    await addDoc(txCol(), {
+      amount: amount, description: desc, category: cat,
+      date: now().toISOString(), createdAt: Date.now(),
+      type: type
+    });
+    const sign = type==='income' ? '+' : '';
+    toast(`${desc} ${sign}${amount}€ προστέθηκε!`,'ok');
+  } catch(e){ toast('Σφάλμα','err'); console.error(e); }
+};
+
+function renderQuickAdds(){
+  const qa = settings.quickAdds || [];
+  if(!qa.length){ $('qaRow').innerHTML=''; return; }
+  $('qaRow').innerHTML = qa.map((q,i)=>{
+    const isInc = q.type==='income';
+    const cls = isInc ? 'qa-btn inc' : 'qa-btn';
+    const amtCls = isInc ? 'qa-amt income' : 'qa-amt expense';
+    const prefix = isInc ? '+' : '';
+    return `<button class="${cls}" onclick="quickAdd('${esc(q.name)}','${q.cat}',${q.amount},'${q.type}')">
+      <span class="qa-ico">${q.icon}</span>
+      <span class="${amtCls}">${prefix}${q.amount}€</span>
+      ${esc(q.name)}
+    </button>`;
+  }).join('');
+}
+
+// ── Quick Add management (settings) ──
+function renderQaManage(){
+  const qa = settings.quickAdds || [];
+  let h = '';
+  qa.forEach((q,i)=>{
+    const isInc = q.type==='income';
+    const amtCls = isInc ? 'qa-item-amt income' : 'qa-item-amt expense';
+    const prefix = isInc ? '+' : '-';
+    h += `<div class="qa-item">
+      <div class="qa-item-ico">${q.icon}</div>
+      <div class="qa-item-info">${esc(q.name)}</div>
+      <div class="${amtCls}">${prefix}${q.amount}€</div>
+      <button class="qa-item-del" onclick="removeQa(${i})">✕</button>
+    </div>`;
+  });
+  $('qaManageList').innerHTML = h || '<div style="color:var(--text2);font-size:13px;padding:8px 0">Δεν έχεις κουμπιά ακόμα.</div>';
+}
+
+window.removeQa = async (idx)=>{
+  if(!currentUser) return;
+  const qa = [...(settings.quickAdds||[])];
+  qa.splice(idx, 1);
+  try {
+    await updateDoc(settingsRef(), { quickAdds: qa });
+    toast('Κουμπί αφαιρέθηκε','ok');
+  } catch(e){ toast('Σφάλμα','err'); }
+};
+
+window.toggleQaForm = (show)=>{
+  $('qaAddForm').style.display = show ? 'block' : 'none';
+  $('qaAddBtn').style.display = show ? 'none' : '';
+  if(show){
+    $('qaNewIcon').value='';$('qaNewName').value='';$('qaNewAmt').value='';
+    qaNewType='expense'; qaNewCat=null;
+    $('qaTypeExp').className='qa-add-type-btn sel-exp';
+    $('qaTypeInc').className='qa-add-type-btn';
+    renderQaCatPicker();
+  }
+};
+
+window.setQaType = (type)=>{
+  qaNewType = type;
+  if(type==='expense'){
+    $('qaTypeExp').className='qa-add-type-btn sel-exp';
+    $('qaTypeInc').className='qa-add-type-btn';
+    $('qaNewCatWrap').style.display='';
+    qaNewCat=null;
+  } else {
+    $('qaTypeExp').className='qa-add-type-btn';
+    $('qaTypeInc').className='qa-add-type-btn sel-inc';
+    $('qaNewCatWrap').style.display='none';
+    qaNewCat='income';
+  }
+};
+
+function renderQaCatPicker(){
+  const expCats = Object.entries(CATS).filter(([k])=>k!=='income');
+  $('qaNewCatG').innerHTML = expCats.map(([k,v])=>
+    `<div class="ct" data-c="${k}" onclick="selQaCat(this)">${v.icon} ${v.label}</div>`
+  ).join('');
+  $('qaNewCatWrap').style.display = qaNewType==='income' ? 'none' : '';
+}
+
+window.selQaCat = (el)=>{
+  $('qaNewCatG').querySelectorAll('.ct').forEach(t=>t.classList.remove('sel'));
+  el.classList.add('sel');
+  qaNewCat = el.dataset.c;
+};
+
+window.saveNewQa = async ()=>{
+  if(!currentUser) return;
+  const icon = $('qaNewIcon').value.trim();
+  const name = $('qaNewName').value.trim();
+  const amount = parseFloat($('qaNewAmt').value);
+  if(!icon){ toast('Βάλε ένα emoji','err'); return; }
+  if(!name){ toast('Βάλε όνομα','err'); return; }
+  if(!amount || amount<=0){ toast('Βάλε ποσό','err'); return; }
+  if(qaNewType==='expense' && !qaNewCat){ toast('Επίλεξε κατηγορία','err'); return; }
+  const cat = qaNewType==='income' ? 'income' : qaNewCat;
+
+  const qa = [...(settings.quickAdds||[])];
+  qa.push({icon, name, cat, amount, type: qaNewType});
+
+  try {
+    await updateDoc(settingsRef(), { quickAdds: qa });
+    toast('Κουμπί προστέθηκε!','ok');
+    window.toggleQaForm(false);
+  } catch(e){ toast('Σφάλμα','err'); }
+};
+
+// ── Add TX (modal) ──
 window.addTx = async ()=>{
   if(!currentUser)return;
   const amt=parseFloat($('txAmt').value);
   const dsc=$('txDsc').value.trim();
   if(!amt||amt<=0){shake('txAmt');return;}
   if(!dsc){shake('txDsc');return;}
-  if(!selCategory){const g=$('catG');g.style.outline='2px solid var(--red)';g.style.borderRadius='12px';
-  setTimeout(()=>g.style.outline='none',800);return;}
+  if(txType==='expense' && !selCategory){
+    const g=$('catG');g.style.outline='2px solid var(--red)';g.style.borderRadius='12px';
+    setTimeout(()=>g.style.outline='none',800);return;
+  }
+  const cat = txType==='income' ? 'income' : selCategory;
   try{
-    await addDoc(userCol(currentUser.uid,'transactions'),{
-      amount:Math.round(amt*100)/100, description:dsc, category:selCategory,
-      date:now().toISOString(), createdAt:now().getTime()
+    await addDoc(txCol(),{
+      amount:Math.round(amt*100)/100, description:dsc, category:cat,
+      date:now().toISOString(), createdAt:now().getTime(),
+      type: txType
     });
-    window.closeMo();toast('Προστέθηκε!','ok');
+    window.closeMo();
+    const sign = txType==='income' ? '+' : '';
+    toast(`${sign}${fmt(Math.round(amt*100)/100)} ${txType==='income'?'προστέθηκε!':'προστέθηκε!'}`,'ok');
   }catch(e){toast('Σφάλμα','err');console.error(e);}
 };
 
 // ── Delete TX ──
 window.delTx=(id)=>{
   showCfm('Διαγραφή αυτής της συναλλαγής;',async()=>{
-    try{await deleteDoc(doc(db,'users',currentUser.uid,'transactions',id));toast('Διαγράφηκε','ok');}
+    try{await deleteDoc(txDocRef(id));toast('Διαγράφηκε','ok');}
     catch(e){toast('Σφάλμα','err');}
   });
 };
@@ -638,13 +1219,19 @@ window.saveSettings = async ()=>{
   const s={
     income:parseFloat($('sInc').value)||0,
     savings:parseFloat($('sSav').value)||0,
-    rent:parseFloat($('sRent').value)||0,
-    loan:parseFloat($('sLoan').value)||0,
-    gym:parseFloat($('sGym').value)||0,
-    supermarket:parseFloat($('sSup').value)||0
+    supermarket:parseFloat($('sSup').value)||0,
+    rent:0,loan:0,gym:0,
+    lastRecurringMonth: settings.lastRecurringMonth || '',
+    walletId: activeWalletId || '',
+    quickAdds: settings.quickAdds || DEFAULT_QA,
+    fixedBills: settings.fixedBills || DEFAULT_BILLS,
+    paidBills: settings.paidBills || {}
   };
   try{
-    await setDoc(userDoc(currentUser.uid,'settings/config'),s);
+    await setDoc(settingsRef(), s);
+    if(activeWalletId){
+      await setDoc(userDoc(currentUser.uid,'settings/config'), {walletId: activeWalletId}, {merge:true});
+    }
     toast('Ρυθμίσεις αποθηκεύτηκαν!','ok');
     const b=$('saveBtn');const o=b.textContent;b.textContent='✓ Αποθηκεύτηκε!';b.style.background='var(--green)';
     setTimeout(()=>{b.textContent=o;b.style.background='';},1500);
@@ -653,10 +1240,10 @@ window.saveSettings = async ()=>{
 
 // ── Reset ──
 window.confirmReset=()=>{
-  showCfm('Διαγραφή ΟΛΩΝ των δεδομένων από το cloud;',async()=>{
+  showCfm('Διαγραφή ΟΛΩΝ των δεδομένων;',async()=>{
     try{
-      for(const tx of transactions){await deleteDoc(doc(db,'users',currentUser.uid,'transactions',tx.id));}
-      await setDoc(userDoc(currentUser.uid,'settings/config'),DEF);
+      for(const tx of transactions){await deleteDoc(txDocRef(tx.id));}
+      await setDoc(settingsRef(),{...DEF,quickAdds:DEFAULT_QA,fixedBills:DEFAULT_BILLS,paidBills:{}});
       toast('Επαναφορά ολοκληρώθηκε','ok');
     }catch(e){toast('Σφάλμα','err');}
   });
@@ -664,9 +1251,112 @@ window.confirmReset=()=>{
 
 function fillSettings(){
   $('sInc').value=settings.income;$('sSav').value=settings.savings;
-  $('sRent').value=settings.rent;$('sLoan').value=settings.loan;
-  $('sGym').value=settings.gym;$('sSup').value=settings.supermarket;
+  $('sSup').value=settings.supermarket;
 }
+
+// ═══════════════════════════════
+// SHARED WALLET
+// ═══════════════════════════════
+function genCode(){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code='';for(let i=0;i<6;i++) code+=chars[Math.floor(Math.random()*chars.length)];
+  return code;
+}
+
+window.createSharedWallet = async ()=>{
+  if(!currentUser) return;
+  const code = genCode();
+  try {
+    await setDoc(doc(db,'wallets',code,'meta','info'),{
+      createdBy: currentUser.uid, createdAt: Date.now(), members: [currentUser.uid]
+    });
+    await setDoc(doc(db,'wallets',code,'settings','config'), {...settings, walletId: code});
+    await setDoc(userDoc(currentUser.uid,'settings/config'), {walletId:code}, {merge:true});
+    activeWalletId = code;
+    startListeners(currentUser.uid);
+    toast(`Κωδικός: ${code}`,'ok');
+  } catch(e){ toast('Σφάλμα δημιουργίας','err'); console.error(e); }
+};
+
+window.joinSharedWallet = async ()=>{
+  if(!currentUser) return;
+  const codeEl = document.getElementById('swJoinCode');
+  if(!codeEl) return;
+  const code = codeEl.value.trim().toUpperCase();
+  if(!code || code.length !== 6){ toast('Βάλε 6-ψήφιο κωδικό','err'); return; }
+  try {
+    const metaSnap = await getDoc(doc(db,'wallets',code,'meta','info'));
+    if(!metaSnap.exists()){ toast('Δεν βρέθηκε πορτοφόλι','err'); return; }
+    const meta = metaSnap.data();
+    const members = meta.members || [];
+    if(!members.includes(currentUser.uid)){
+      members.push(currentUser.uid);
+      await updateDoc(doc(db,'wallets',code,'meta','info'), { members });
+    }
+    await setDoc(userDoc(currentUser.uid,'settings/config'), {walletId:code}, {merge:true});
+    activeWalletId = code;
+    startListeners(currentUser.uid);
+    toast('Συνδέθηκες στο κοινό πορτοφόλι!','ok');
+  } catch(e){ toast('Σφάλμα σύνδεσης','err'); console.error(e); }
+};
+
+window.leaveSharedWallet = async ()=>{
+  if(!currentUser) return;
+  showCfm('Αποσύνδεση από το κοινό πορτοφόλι;', async()=>{
+    try {
+      await setDoc(userDoc(currentUser.uid,'settings/config'), {walletId:''}, {merge:true});
+      activeWalletId = '';
+      startListeners(currentUser.uid);
+      toast('Αποσυνδέθηκες','ok');
+    } catch(e){ toast('Σφάλμα','err'); }
+  });
+};
+
+function renderSharedWalletUI(){
+  const statusEl = $('swStatus');
+  const actionsEl = $('swActions');
+  if(activeWalletId){
+    statusEl.innerHTML = `
+      <div class="sw-status"><div class="sw-dot"></div><div class="sw-txt">Συνδεδεμένο: ${esc(activeWalletId)}</div></div>
+      <div class="sw-code">${esc(activeWalletId)}</div>`;
+    actionsEl.innerHTML = `<button class="btn btn-r" onclick="leaveSharedWallet()">Αποσύνδεση Κοινού Πορτοφολιού</button>`;
+  } else {
+    statusEl.innerHTML = '';
+    actionsEl.innerHTML = `
+      <button class="btn btn-b" onclick="createSharedWallet()" style="margin-bottom:8px">Δημιουργία Κωδικού</button>
+      <div class="sw-input-row">
+        <input type="text" class="fi" id="swJoinCode" placeholder="Κωδικός" maxlength="6" style="text-transform:uppercase">
+        <button class="btn btn-g" onclick="joinSharedWallet()" style="width:auto;padding:14px 20px;flex-shrink:0">Σύνδεση</button>
+      </div>`;
+  }
+}
+
+// ═══════════════════════════════
+// CSV EXPORT
+// ═══════════════════════════════
+window.exportCSV = ()=>{
+  if(!transactions.length){ toast('Δεν υπάρχουν συναλλαγές','err'); return; }
+  const header = 'Ημερομηνία,Περιγραφή,Κατηγορία,Τύπος,Ποσό\n';
+  const rows = transactions.map(tx => {
+    const d = new Date(tx.date);
+    const dateStr = `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()}`;
+    const cat = CATS[tx.category] ? CATS[tx.category].label : tx.category;
+    const desc = `"${tx.description.replace(/"/g, '""')}"`;
+    const typeLabel = tx.type==='income' ? 'Έσοδο' : 'Έξοδο';
+    const sign = tx.type==='income' ? '+' : '-';
+    return `${dateStr},${desc},${cat},${typeLabel},${sign}${tx.amount.toFixed(2)}`;
+  }).join('\n');
+  const csv = '\uFEFF' + header + rows;
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const n = now();
+  a.href = url;
+  a.download = `smartwallet_${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}.csv`;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast('CSV εξήχθη!','ok');
+};
 
 // ═══════════════════════════════
 // AI TIPS
@@ -678,39 +1368,67 @@ function tips(){
   if(b<50&&sp>0)t.push({icon:'🚨',tag:'Κρίσιμη Ειδοποίηση',txt:'Κρίσιμο! Πάγωσε κάθε μη αναγκαίο έξοδο αμέσως!',color:'var(--red)'});
   else if(b<100&&sp>0)t.push({icon:'⚠️',tag:'Προσοχή',txt:'Χαμηλό υπόλοιπο! Εστίασε μόνο στα απαραίτητα.',color:'var(--orange)'});
   if(tr>80)t.push({icon:'🚗',tag:'Μεταφορικά',txt:`Υψηλά μεταφορικά (${fmt(tr)}). Δοκίμασε ΜΜΜ, γλίτωσε ~70€/μήνα.`,color:'var(--blue)'});
-  if(su>settings.supermarket)t.push({icon:'🛒',tag:'Σούπερ Μάρκετ',txt:`Ξεπέρασες τον προϋπολογισμό (${fmt(su)}/${fmt(settings.supermarket)}). Ψάξε προσφορές!`,color:'var(--yellow)'});
+  if(su>settings.supermarket&&settings.supermarket>0)t.push({icon:'🛒',tag:'Σούπερ Μάρκετ',txt:`Ξεπέρασες τον προϋπολογισμό (${fmt(su)}/${fmt(settings.supermarket)}). Ψάξε προσφορές!`,color:'var(--yellow)'});
   if(fd>100)t.push({icon:'🍕',tag:'Φαγητό',txt:`Πολλά σε φαγητό έξω (${fmt(fd)}). Μαγείρεψε σπίτι!`,color:'var(--orange)'});
   if(en>60)t.push({icon:'🎬',tag:'Ψυχαγωγία',txt:`Έξοδα ψυχαγωγίας ${fmt(en)}. Δοκίμασε δωρεάν δραστηριότητες!`,color:'var(--purple)'});
   if(sh>80)t.push({icon:'🛍️',tag:'Αγορές',txt:`Πολλά σε αγορές (${fmt(sh)}). Χρειάζεσαι πραγματικά αυτά;`,color:'var(--pink)'});
-  if(b>=settings.savings&&sp>0)t.push({icon:'✅',tag:'Αποταμίευση',txt:`Μπράβο! On track για ${fmt(settings.savings)} αποταμίευση!`,color:'var(--green)'});
-  if(sp===0)t.push({icon:'💡',tag:'Ξεκίνα',txt:'Πρόσθεσε τα πρώτα σου έξοδα για συμβουλές!',color:'var(--blue)'});
+  if(b>=settings.savings&&sp>0&&settings.savings>0)t.push({icon:'✅',tag:'Αποταμίευση',txt:`Μπράβο! On track για ${fmt(settings.savings)} αποταμίευση!`,color:'var(--green)'});
+  if(sp===0&&tExtraIncome()===0)t.push({icon:'💡',tag:'Ξεκίνα',txt:'Πρόσθεσε τα πρώτα σου έξοδα για συμβουλές!',color:'var(--blue)'});
 
-  const d=now().getDate(),dm=dim(),spendable=settings.income-fixed()-settings.savings;
-  if(d<=dm/2&&sp>spendable*.6&&sp>0)t.push({icon:'📈',tag:'Ρυθμός',txt:'Πάνω από 60% στο μισό μήνα. Πρόσεξε!',color:'var(--orange)'});
+  const extra = tExtraIncome();
+  if(extra>0)t.push({icon:'💰',tag:'Έκτακτα Έσοδα',txt:`+${fmt(extra)} έκτακτα έσοδα αυτόν τον μήνα!`,color:'var(--green)'});
+
+  const d=now().getDate(),dm=dim(),spendable=totalIncome()-fixed()-settings.savings;
+  if(d<=dm/2&&sp>spendable*.6&&sp>0&&spendable>0)t.push({icon:'📈',tag:'Ρυθμός',txt:'Πάνω από 60% στο μισό μήνα. Πρόσεξε!',color:'var(--orange)'});
   return t;
 }
 
 // ═══════════════════════════════
 // RENDERING
 // ═══════════════════════════════
-function renderAll(){renderDash();renderTxL('recTx',5);renderTxL('allTx',0);}
+function renderAll(){renderDash();renderTxL('recTx',5);renderTxPage();renderSavings();renderQuickAdds();renderBills();}
 
 function renderDash(){
   const b=safe();$('balNum').textContent=fmt(b);$('balNum').className='bal-n '+(b>=0?'pos':'neg');
-  $('balLbl').textContent=`από ${fmt(settings.income)} εισόδημα`;
+  const ti=totalIncome();
+  $('balLbl').textContent=`από ${fmt(ti)} εισόδημα` + (tExtraIncome()>0 ? ` (+${fmt(tExtraIncome())} έκτακτα)` : '');
   $('wkVal').textContent=fmt(b>0?b/wleft():0);
   $('dyVal').textContent=fmt(b>0?b/dleftN():0);
   $('dLeft').textContent=dleft();
   renderProg();renderTips();
 }
 
+// Savings Tracker
+function renderSavings(){
+  const spent = tSpent();
+  const fixedAmt = fixed();
+  const saved = Math.max(0, totalIncome() - fixedAmt - spent);
+  const goal = settings.savings || 1;
+  const pct = Math.min(100, (saved / goal) * 100);
+
+  $('savAmt').textContent = `${fmt(saved)} / ${fmt(settings.savings||0)}`;
+  $('savFill').style.width = (settings.savings>0?pct:0) + '%';
+
+  let msg;
+  if(settings.savings<=0) msg = 'Βάλε στόχο αποταμίευσης στις Ρυθμίσεις!';
+  else if(spent === 0 && tExtraIncome()===0) msg = 'Πρόσθεσε έξοδα για να δεις την πρόοδο!';
+  else if(pct >= 100) msg = 'Μπράβο! Πέτυχες τον στόχο αποταμίευσης!';
+  else if(pct >= 70) msg = 'Συνέχισε έτσι! Σχεδόν τα κατάφερες!';
+  else if(pct >= 40) msg = 'Καλή πορεία, κράτα σταθερά!';
+  else msg = 'Πρόσεχε τα έξοδα για να πετύχεις τον στόχο.';
+  $('savMsg').textContent = msg;
+}
+
 function renderProg(){
-  const sp=settings.income-fixed()-settings.savings,ts=tSpent();
+  const sp=totalIncome()-fixed()-settings.savings, ts=tSpent();
   const cats=[{k:'super',l:'Σούπερ Μάρκετ',b:settings.supermarket,i:'🛒'},{k:'food',l:'Φαγητό',b:100,i:'🍕'},
   {k:'transport',l:'Μεταφορικά',b:80,i:'🚗'},{k:'ent',l:'Ψυχαγωγία',b:60,i:'🎬'},{k:'shop',l:'Αγορές',b:80,i:'🛍️'}];
-  let h='';const op=sp>0?Math.min(100,(ts/sp)*100):0;
-  const oc=op>90?'var(--red)':op>70?'var(--orange)':'var(--green)';
-  h+=`<div class="pr-w"><div class="pr-h"><span class="pr-n">💰 Συνολικά</span><span class="pr-v">${fmt(ts)} / ${fmt(sp)}</span></div><div class="pr-bar"><div class="pr-fill" style="width:${op}%;background:${oc}"></div></div></div>`;
+  let h='';
+  if(sp>0){
+    const op=Math.min(100,(ts/sp)*100);
+    const oc=op>90?'var(--red)':op>70?'var(--orange)':'var(--green)';
+    h+=`<div class="pr-w"><div class="pr-h"><span class="pr-n">💰 Συνολικά</span><span class="pr-v">${fmt(ts)} / ${fmt(sp)}</span></div><div class="pr-bar"><div class="pr-fill" style="width:${op}%;background:${oc}"></div></div></div>`;
+  }
   cats.forEach(c=>{const s=cSum(c.k);if(!s)return;const p=Math.min(100,(s/c.b)*100);
   const cl=p>100?'var(--red)':p>75?'var(--orange)':'var(--green)';
   h+=`<div class="pr-w"><div class="pr-h"><span class="pr-n">${c.i} ${c.l}</span><span class="pr-v">${fmt(s)} / ${fmt(c.b)}</span></div><div class="pr-bar"><div class="pr-fill" style="width:${p}%;background:${cl}"></div></div></div>`;});
@@ -722,14 +1440,260 @@ function renderTips(){
   $('tipBox').innerHTML=t.map(x=>`<div class="tip"><div class="tip-tag" style="color:${x.color}">🤖 ${x.tag}</div><div class="tip-ico">${x.icon}</div><div class="tip-txt">${x.txt}</div></div>`).join('');
 }
 
-function renderTxL(id,lim){
-  const el=$(id);const items=lim>0?transactions.slice(0,lim):transactions;
-  if(!items.length){el.innerHTML=`<div class="empty"><div class="empty-i">📝</div><div class="empty-t">Δεν υπάρχουν συναλλαγές ακόμα.<br>Πάτα το + για να ξεκινήσεις!</div></div>`;return;}
+// ═══════════════════════════════
+// TRANSACTION LIST (income-aware)
+// ═══════════════════════════════
+function renderTxPage(){
+  const searchVal = $('txSearch') ? $('txSearch').value.trim().toLowerCase() : '';
+  let items = transactions;
+  if(searchVal){
+    items = transactions.filter(tx => tx.description.toLowerCase().includes(searchVal));
+  }
+  renderTxL('allTx', 0, items);
+}
+
+function renderTxL(id, lim, customItems){
+  const el=$(id);
+  const items = customItems ? (lim>0 ? customItems.slice(0,lim) : customItems) : (lim>0?transactions.slice(0,lim):transactions);
+  if(!items.length){el.innerHTML=`<div class="empty"><div class="empty-i">📝</div><div class="empty-t">${id==='allTx'&&$('txSearch')&&$('txSearch').value?'Δεν βρέθηκαν αποτελέσματα.':'Δεν υπάρχουν συναλλαγές ακόμα.<br>Πάτα το + για να ξεκινήσεις!'}</div></div>`;return;}
   let h='',last='';
   items.forEach(tx=>{const dl=fDate(tx.date);if(dl!==last){last=dl;h+=`<div class="dsep">${dl}</div>`;}
-  const c=CATS[tx.category]||CATS.other;
-  h+=`<div class="tx"><div class="tx-ic ${c.css}">${c.icon}</div><div class="tx-d"><div class="tx-n">${esc(tx.description)}</div><div class="tx-m">${c.label} · ${fTime(tx.date)}</div></div><div class="tx-a">-${fmt(tx.amount)}</div><button class="tx-x" onclick="delTx('${tx.id}')">✕</button></div>`;});
+  const isIncome = tx.type==='income';
+  const c = CATS[tx.category]||CATS.other;
+  const recurIcon = tx.recurring ? ' 🔁' : '';
+  const amtClass = isIncome ? 'tx-a income' : 'tx-a expense';
+  const amtPrefix = isIncome ? '+' : '-';
+  h+=`<div class="tx-wrap" data-txid="${tx.id}">
+    <div class="tx-del-bg">Διαγραφή</div>
+    <div class="tx">
+      <div class="tx-ic ${c.css}">${c.icon}</div>
+      <div class="tx-d"><div class="tx-n">${esc(tx.description)}${recurIcon}</div><div class="tx-m">${c.label} · ${fTime(tx.date)}</div></div>
+      <div class="${amtClass}">${amtPrefix}${fmt(tx.amount)}</div>
+    </div>
+  </div>`;});
   el.innerHTML=h;
+  el.querySelectorAll('.tx-wrap').forEach(initSwipe);
+}
+
+// ═══════════════════════════════
+// SWIPE TO DELETE
+// ═══════════════════════════════
+function initSwipe(wrap){
+  let startX=0, currentX=0, isSwiping=false, swiped=false;
+  const txEl = wrap.querySelector('.tx');
+  const threshold = 80;
+
+  wrap.addEventListener('touchstart', e=>{
+    if(swiped){ wrap.classList.remove('swiped');txEl.style.transform='';swiped=false;return; }
+    startX = e.touches[0].clientX; isSwiping = false;
+  }, {passive:true});
+
+  wrap.addEventListener('touchmove', e=>{
+    const diffX = e.touches[0].clientX - startX;
+    if(diffX < -10) isSwiping = true;
+    if(!isSwiping) return;
+    currentX = Math.min(0, Math.max(-120, diffX));
+    txEl.style.transform = `translateX(${currentX}px)`;
+    txEl.style.transition = 'none';
+  }, {passive:true});
+
+  wrap.addEventListener('touchend', ()=>{
+    txEl.style.transition = 'transform .25s ease';
+    if(currentX < -threshold){ txEl.style.transform=`translateX(-80px)`;wrap.classList.add('swiped');swiped=true; }
+    else { txEl.style.transform='';wrap.classList.remove('swiped');swiped=false; }
+    currentX=0;isSwiping=false;
+  }, {passive:true});
+
+  wrap.querySelector('.tx-del-bg').addEventListener('click', ()=>{ window.delTx(wrap.dataset.txid); });
+}
+
+// ═══════════════════════════════
+// STATISTICS
+// ═══════════════════════════════
+function renderStats(){ renderBarChart(); renderCatBreakdown(); renderComparison(); renderCatComparison(); renderAiInsights(); }
+
+function renderBarChart(){
+  const n = now(); const months = [];
+  for(let i=5;i>=0;i--){
+    let m=n.getMonth()-i, y=n.getFullYear();
+    if(m<0){m+=12;y--;}
+    months.push({label:MONTH_NAMES[m], spent:spentForMonth(y,m)});
+  }
+  const maxS = Math.max(...months.map(m=>m.spent), 1);
+  $('barChart').innerHTML = months.map(m=>{
+    const pct = (m.spent/maxS)*100;
+    return `<div class="bar-col"><div class="bar-val">${m.spent>0?Math.round(m.spent)+'€':'-'}</div>
+    <div class="bar-rect" style="height:${Math.max(pct,3)}%"></div><div class="bar-lbl">${m.label}</div></div>`;
+  }).join('');
+}
+
+function renderCatBreakdown(){
+  const monthExp = mExpenses();
+  const total = monthExp.reduce((s,t)=>s+t.amount,0) || 1;
+  const catTotals = {};
+  monthExp.forEach(tx=>{ catTotals[tx.category] = (catTotals[tx.category]||0) + tx.amount; });
+  const sorted = Object.entries(catTotals).sort((a,b)=>b[1]-a[1]);
+  const colors = {food:'var(--orange)',super:'var(--yellow)',transport:'var(--blue)',
+    ent:'var(--purple)',shop:'var(--pink)',health:'var(--green)',bills:'var(--red)',other:'var(--text2)'};
+  if(!sorted.length){
+    $('catBreakdown').innerHTML = '<div class="empty"><div class="empty-t">Δεν υπάρχουν έξοδα αυτόν τον μήνα.</div></div>';return;
+  }
+  $('catBreakdown').innerHTML = sorted.map(([cat, amt])=>{
+    const c=CATS[cat]||CATS.other; const pct=(amt/total*100).toFixed(1); const color=colors[cat]||'var(--text2)';
+    return `<div class="cat-bar-row"><div class="cat-bar-icon">${c.icon}</div><div class="cat-bar-info">
+    <div class="cat-bar-top"><span class="cat-bar-name">${c.label}</span><span class="cat-bar-val">${fmt(amt)} (${pct}%)</span></div>
+    <div class="cat-bar-track"><div class="cat-bar-fill" style="width:${pct}%;background:${color}"></div></div></div></div>`;
+  }).join('');
+}
+
+function renderComparison(){
+  const n=now();
+  const curSpent=spentForMonth(n.getFullYear(),n.getMonth());
+  let prevM=n.getMonth()-1, prevY=n.getFullYear();
+  if(prevM<0){prevM=11;prevY--;}
+  const prevSpent=spentForMonth(prevY,prevM);
+  const diff=curSpent-prevSpent;
+  const diffPct=prevSpent>0?((diff/prevSpent)*100).toFixed(0):0;
+  const diffColor=diff>0?'var(--red)':'var(--green)';
+  const diffSign=diff>0?'+':'';
+  const diffText=prevSpent>0?`${diffSign}${diffPct}% vs προηγ.`:'Δεν υπάρχουν δεδομένα';
+  $('cmpRow').innerHTML = `
+    <div class="cmp-card"><div class="cmp-lbl">${MONTH_NAMES[n.getMonth()]} (Τρέχων)</div>
+    <div class="cmp-val" style="color:var(--blue)">${fmt(curSpent)}</div></div>
+    <div class="cmp-card"><div class="cmp-lbl">${MONTH_NAMES[prevM]} (Προηγ.)</div>
+    <div class="cmp-val" style="color:var(--text2)">${fmt(prevSpent)}</div>
+    <div class="cmp-diff" style="color:${diffColor}">${diffText}</div></div>`;
+}
+
+// ═══════════════════════════════
+// DETAILED CATEGORY COMPARISON
+// ═══════════════════════════════
+function renderCatComparison(){
+  const n=now();
+  const curY=n.getFullYear(), curM=n.getMonth();
+  let prevM=curM-1, prevY=curY;
+  if(prevM<0){prevM=11;prevY--;}
+
+  const allCats=['food','super','transport','ent','shop','health','bills','other'];
+  const rows=[];
+
+  allCats.forEach(cat=>{
+    const cur=catSumForMonth(cat,curY,curM);
+    const prev=catSumForMonth(cat,prevY,prevM);
+    if(cur===0&&prev===0) return;
+    const diff=cur-prev;
+    rows.push({cat,cur,prev,diff});
+  });
+
+  if(!rows.length){
+    $('catCompare').innerHTML='<div class="empty"><div class="empty-t">Δεν υπάρχουν αρκετά δεδομένα για σύγκριση.</div></div>';
+    return;
+  }
+
+  // Sort by absolute diff descending
+  rows.sort((a,b)=>Math.abs(b.diff)-Math.abs(a.diff));
+
+  $('catCompare').innerHTML = rows.map(r=>{
+    const c=CATS[r.cat]||CATS.other;
+    let diffClass, diffText;
+    if(r.diff<-0.5){
+      diffClass='better';
+      diffText=`-${fmt(Math.abs(r.diff))}`;
+    } else if(r.diff>0.5){
+      diffClass='worse';
+      diffText=`+${fmt(r.diff)}`;
+    } else {
+      diffClass='same';
+      diffText='Ίδια';
+    }
+    return `<div class="cat-cmp-row">
+      <div class="cat-cmp-icon">${c.icon}</div>
+      <div class="cat-cmp-info">
+        <div class="cat-cmp-name">${c.label}</div>
+        <div class="cat-cmp-vals">${MONTH_NAMES[curM]}: ${fmt(r.cur)} · ${MONTH_NAMES[prevM]}: ${fmt(r.prev)}</div>
+      </div>
+      <div class="cat-cmp-diff ${diffClass}">${diffText}</div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════
+// AI MONTHLY INSIGHTS
+// ═══════════════════════════════
+function renderAiInsights(){
+  const n=now();
+  const curY=n.getFullYear(), curM=n.getMonth();
+  let prevM=curM-1, prevY=curY;
+  if(prevM<0){prevM=11;prevY--;}
+
+  const curTotal=spentForMonth(curY,curM);
+  const prevTotal=spentForMonth(prevY,prevM);
+  const insights=[];
+
+  if(prevTotal===0&&curTotal===0){
+    $('aiInsights').innerHTML='<div class="empty"><div class="empty-t">Πρόσθεσε έξοδα για να δεις AI ανάλυση!</div></div>';
+    return;
+  }
+
+  // Overall comparison
+  if(prevTotal>0){
+    const totalDiff=curTotal-prevTotal;
+    const pct=((totalDiff/prevTotal)*100).toFixed(0);
+    if(totalDiff<-5){
+      insights.push({icon:'🎉',txt:`Μπράβο! Ξοδεύεις ${fmt(Math.abs(totalDiff))} λιγότερα (${Math.abs(pct)}% κάτω) από τον ${MONTH_NAMES[prevM]}. Συνέχισε έτσι!`});
+    } else if(totalDiff>50){
+      insights.push({icon:'⚠️',txt:`Πρόσεξε! Τα έξοδά σου είναι ${fmt(totalDiff)} περισσότερα (+${pct}%) από τον ${MONTH_NAMES[prevM]}. Δες πού μπορείς να κόψεις.`});
+    } else if(totalDiff>5){
+      insights.push({icon:'📊',txt:`Μικρή αύξηση ${fmt(totalDiff)} (+${pct}%) vs ${MONTH_NAMES[prevM]}. Τίποτα ανησυχητικό, αλλά πρόσεχε.`});
+    }
+  }
+
+  // Per-category insights
+  const allCats=['food','super','transport','ent','shop','health','bills'];
+  allCats.forEach(cat=>{
+    const cur=catSumForMonth(cat,curY,curM);
+    const prev=catSumForMonth(cat,prevY,prevM);
+    if(cur===0&&prev===0) return;
+    const c=CATS[cat]||CATS.other;
+    const diff=cur-prev;
+
+    if(prev>0&&diff<-10){
+      const pct=((Math.abs(diff)/prev)*100).toFixed(0);
+      insights.push({icon:'✅',txt:`${c.icon} ${c.label}: Ξοδεύεις ${fmt(Math.abs(diff))} λιγότερα (-${pct}%)! Μπράβο σου!`});
+    } else if(prev>0&&diff>20){
+      const pct=((diff/prev)*100).toFixed(0);
+      insights.push({icon:'🔺',txt:`${c.icon} ${c.label}: +${fmt(diff)} παραπάνω (+${pct}%) από τον ${MONTH_NAMES[prevM]}. Μπορείς να το μειώσεις;`});
+    } else if(cur>0&&prev===0){
+      insights.push({icon:'🆕',txt:`${c.icon} ${c.label}: Νέα κατηγορία αυτόν τον μήνα (${fmt(cur)}). Πρόσεξε να μην ξεφύγει.`});
+    }
+  });
+
+  // Top spending category
+  const catTotals={};
+  mExpenses().forEach(tx=>{catTotals[tx.category]=(catTotals[tx.category]||0)+tx.amount;});
+  const topCat=Object.entries(catTotals).sort((a,b)=>b[1]-a[1])[0];
+  if(topCat){
+    const tc=CATS[topCat[0]]||CATS.other;
+    const topPct=((topCat[1]/curTotal)*100).toFixed(0);
+    insights.push({icon:'📍',txt:`Η κατηγορία ${tc.icon} ${tc.label} είναι η #1 σου (${topPct}% των εξόδων). ${topCat[1]>100?'Σκέψου τρόπους να τη μειώσεις.':'Λογικό επίπεδο.'}`});
+  }
+
+  // Days analysis
+  const daysPassed=n.getDate();
+  const daysInMonth=dim();
+  const dailyAvg=curTotal/daysPassed;
+  const projected=dailyAvg*daysInMonth;
+  if(daysPassed>=5&&curTotal>0){
+    insights.push({icon:'📈',txt:`Με ρυθμό ${fmt(dailyAvg)}/ημέρα, θα φτάσεις ~${fmt(projected)} ως τέλος μήνα. ${projected>totalIncome()-fixed()?'Αυτό ξεπερνά τα όριά σου!':'Μέσα στα πλάνα σου.'}`});
+  }
+
+  if(!insights.length){
+    insights.push({icon:'💡',txt:'Πρόσθεσε περισσότερα δεδομένα για πιο αναλυτικά insights!'});
+  }
+
+  $('aiInsights').innerHTML = insights.map(i=>
+    `<div class="ai-insight"><div class="ai-insight-ico">${i.icon}</div><div class="ai-insight-txt">${i.txt}</div></div>`
+  ).join('');
 }
 </script>
 </body>
